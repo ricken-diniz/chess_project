@@ -192,7 +192,7 @@ def spawn_pointers_king(i, j, M, chessboard, color):
 
             M[i][j] = 1
 
-def spawn_pointers_pawn(i, j, M, chessboard, color = 1):
+def spawn_pointers_pawn(i, j, M, chessboard, color):
     chessboard[i][j] = {'P':M}     if color == 1 else     {'p':M}
 
     M[i][j] = 2
