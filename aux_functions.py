@@ -45,3 +45,28 @@ def show_matrix(M):
                 M[i][j] = f'\033[95m{3}\033[0m'
             else:
                 M[i][j] = f'{M[i][j]}'
+
+def affine_function(a, x, b):
+    y = a*x + b
+
+    return x, y
+
+def check_color(piece_type, chessboard, i, j):
+    types = {
+        'horse': ['H','h'],
+        'king': ['K','k'],
+        'pawn': ['P','p'],
+        'rock': [ 'RQP', 'rqp' ],
+        'bishop': [ 'BQP', 'bqp' ],
+    }
+
+    if type(chessboard[i][j]) == dict:
+        for piece in chessboard[i][j].keys():
+            if piece in types[piece_type][0]:
+                return 1
+            elif piece in types[piece_type][1]:
+                return -1
+            else:
+                return f'A peça não se comporta como: {piece_type}.'
+    else:
+        return 'Nenhuma peça foi selecionada.'
