@@ -2,11 +2,32 @@ def get_square_matrix(n):
     M = [[0 for _ in range(n)] for _ in range(n)]
     return M
 
+def get_initial_example():
+    chessboard = [
+        ['R','H','B','Q','K','B','H','R'],
+
+        ['P','P','P','P','P','P','P','P'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['p','p','p','p','p','p','p','p'],
+
+        ['r','h','b','q','k','b','h','r'],
+    ]
+
+    return chessboard
+
 def get_game_example():
     chessboard = [
         [{'R':1},{'H':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'H':1},{'R':1}],
 
-        [{'P':1},{'P':1},{'P':1},{'P':1},  '.'  ,{'P':1},{'P':1},{'P':1}],
+        [{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1}],
 
         [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
@@ -51,22 +72,17 @@ def affine_function(a, x, b):
 
     return x, y
 
-def check_color(piece_type, chessboard, i, j):
-    types = {
-        'horse': ['H','h'],
-        'king': ['K','k'],
-        'pawn': ['P','p'],
-        'rock': [ 'RQP', 'rqp' ],
-        'bishop': [ 'BQP', 'bqp' ],
-    }
+def check_color(piece):
+    if type(piece) == str:
+        return Exception('Nenhuma peça selecionada')
 
-    if type(chessboard[i][j]) == dict:
-        for piece in chessboard[i][j].keys():
-            if piece in types[piece_type][0]:
-                return 1
-            elif piece in types[piece_type][1]:
-                return -1
-            else:
-                return f'A peça não se comporta como: {piece_type}.'
-    else:
-        return 'Nenhuma peça foi selecionada.'
+    white_pieces = ['K','Q','R','B','H','P']
+    black_pieces = ['k','q','r','b','h','p']
+
+    for k in piece.keys():
+        if k in white_pieces:
+            return 1
+        elif k in black_pieces:
+            return -1
+    
+    return Exception('Peça mal formulada')
