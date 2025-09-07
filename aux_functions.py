@@ -2,6 +2,25 @@ def get_square_matrix(n):
     M = [[0 for _ in range(n)] for _ in range(n)]
     return M
 
+def get_initial_game(defs):
+    chessboard   = get_initial_example()
+    white_pieces = ['K','Q','R','B','H','P']
+    black_pieces = ['k','q','r','b','h','p']
+
+    for lin in range(len(chessboard)):
+        for col in range(len(chessboard[lin])):
+
+            piece = chessboard[lin][col]
+            if piece in white_pieces or piece in black_pieces:
+
+                color                       = check_color(piece)
+                chessboard[lin][col]        = {}
+                chessboard[lin][col][piece] = get_square_matrix(8)
+
+                defs[piece.lower()](lin, col, chessboard[lin][col][piece], chessboard, color)
+
+    return chessboard
+
 def get_initial_example():
     chessboard = [
         ['R','H','B','Q','K','B','H','R'],
@@ -60,10 +79,13 @@ def show_matrix(M):
             
             if M[i][j] == 1:
                 M[i][j] = f'\033[94m{1}\033[0m'
+                
             elif M[i][j] == 2:
                 M[i][j] = f'\033[91m{2}\033[0m'
+                
             elif M[i][j] == 3:
                 M[i][j] = f'\033[95m{3}\033[0m'
+                
             else:
                 M[i][j] = f'{M[i][j]}'
 
@@ -73,16 +95,13 @@ def affine_function(a, x, b):
     return x, y
 
 def check_color(piece):
-    if type(piece) == str:
-        return Exception('Nenhuma peça selecionada')
 
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
 
-    for k in piece.keys():
-        if k in white_pieces:
-            return 1
-        elif k in black_pieces:
-            return -1
+    if piece in white_pieces:
+        return 1
+    elif piece in black_pieces:
+        return -1
     
     return Exception('Peça mal formulada')
