@@ -1,25 +1,39 @@
 from aux_functions import affine_function
 
-def verify_has_piece(M, i, j, color, chessboard):
+def verify_has_piece(i, j, M, chessboard, color):
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
+    piece        = None
+    white        = False
+    black        = False
+
 
     if type(chessboard[i][j]) == dict:
-
         for k in chessboard[i][j].keys():
-            if k in white_pieces and color == 1 or k in black_pieces and color == -1:
-                return True
-            
-            else:
-                M[i][j] = 3
-                return True
+            if (white := k in white_pieces) or (black := k in black_pieces):
+                piece = k
+
+    elif type(chessboard[i][j]) == str and (white := chessboard[i][j] in white_pieces) or (black := chessboard[i][j] in black_pieces):
+        piece = chessboard[i][j]
+
+
+    print(white, black, piece)
+    if piece is not None:
+        if piece in white_pieces and white or piece in black_pieces and black:
+            return True
+        
+        else:
+            M[i][j] = 3
+            return True
     
+
     return False
 
 
 
 def spawn_pointers_bishop(i,j, M,chessboard, color):
-    chessboard[i][j] = {'B':M}     if color == 1 else     {'b':M}
+    piece                   = 'B' if color == 1 else 'b'
+    chessboard[i][j][piece] = M
 
     greater = i if i > j else j
     less    = i if i < j else j
@@ -36,7 +50,7 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
         x, y = affine_function(1, _, pdc)
         lin, col    = (x, y)     if j > i else     (y, x)
         
-        if verify_has_piece(M, lin, col, color, chessboard):            
+        if verify_has_piece(lin, col, M, chessboard, color):            
             break
 
         M[lin][col] = 1
@@ -45,7 +59,7 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
         x, y = affine_function(1, _, pdc)
         lin, col    = (x, y)     if j > i else     (y, x)
         
-        if verify_has_piece(M, lin, col, color, chessboard):            
+        if verify_has_piece(lin, col, M, chessboard, color):            
             break
 
         M[lin][col] = 1
@@ -56,7 +70,7 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
             x, y = affine_function(-1, _, l + sdc)
             lin, col    = (x, y)
 
-            if verify_has_piece(M, lin, col, color, chessboard):            
+            if verify_has_piece(lin, col, M, chessboard, color):            
                 break
 
             M[lin][col] = 1
@@ -65,7 +79,7 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
             x, y = affine_function(-1, _, l + sdc)
             lin, col    = (x, y)
 
-            if verify_has_piece(M, lin, col, color, chessboard):            
+            if verify_has_piece(lin, col, M, chessboard, color):            
                 break
 
             M[lin][col] = 1
@@ -77,7 +91,7 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
             x, y = affine_function(-1, _, l + sdc)
             lin, col    = (x, y)
 
-            if verify_has_piece(M, lin, col, color, chessboard):            
+            if verify_has_piece(lin, col, M, chessboard, color):            
                 break
 
             M[lin][col] = 1
@@ -86,7 +100,7 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
             x, y = affine_function(-1, _, l + sdc)
             lin, col    = (x, y)
 
-            if verify_has_piece(M, lin, col, color, chessboard):            
+            if verify_has_piece(lin, col, M, chessboard, color):            
                 break
 
             M[lin][col] = 1
@@ -94,40 +108,36 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
     M[i][j] = 2
 
 def spawn_pointers_rock(i, j, M, chessboard, color):
-    chessboard[i][j] = {'R':M}     if color == 1 else     {'r':M}
-    
-    # color = check_color('rock', chessboard, i, j)
-    # if type(color) != int:
-    #     print(color)
-    #     return
+    piece                   = 'R' if color == 1 else 'r'
+    chessboard[i][j][piece] = M
 
-    for l in range(i-1, -1,-1):
+    for _ in range(i-1, -1,-1):
 
-        if verify_has_piece(M, l, j, color, chessboard):            
+        if verify_has_piece(_, j, M, chessboard, color):            
             break
         
-        M[l][j] = 1
+        M[_][j] = 1
 
-    for l in range(i+1, len(M)):
+    for _ in range(i+1, len(M)):
 
-        if verify_has_piece(M, l, j, color, chessboard):            
+        if verify_has_piece(_, j, M, chessboard, color):            
             break
         
-        M[l][j] = 1
+        M[_][j] = 1
 
-    for l in range(j-1, -1,-1):
+    for _ in range(j-1, -1,-1):
 
-        if verify_has_piece(M, i, l, color, chessboard):            
+        if verify_has_piece(i, _, M, chessboard, color):            
             break
 
-        M[i][l] = 1
+        M[i][_] = 1
     
-    for l in range(j+1, len(M)):
+    for _ in range(j+1, len(M)):
 
-        if verify_has_piece(M, i, l, color, chessboard):            
+        if verify_has_piece(i, _, M, chessboard, color):            
             break 
 
-        M[i][l] = 1
+        M[i][_] = 1
 
     M[i][j] = 2
 
@@ -135,11 +145,12 @@ def spawn_pointers_queen(i, j, M, chessboard, color):
     spawn_pointers_rock(i,j, M, chessboard, color)
     spawn_pointers_bishop(i,j, M, chessboard, color)
 
-    chessboard[i][j] = {'Q':M}     if color == 1 else     {'q':M}
+    piece                   = 'Q' if color == 1 else 'q'
+    chessboard[i][j][piece] = M
 
 def spawn_pointers_horse(i, j, M, chessboard, color):
-    chessboard[i][j] = {'H':M}     if color == 1 else     {'h':M}
-
+    piece                   = 'H' if color == 1 else 'h'
+    chessboard[i][j][piece] = M
 
     M[i][j] = 2
     l       = len(M)
@@ -160,13 +171,14 @@ def spawn_pointers_horse(i, j, M, chessboard, color):
 
         if i >= 0 and j >= 0 and i < l and j < l:
 
-            if verify_has_piece(M, i, j, color, chessboard):            
+            if verify_has_piece(i, j, M, chessboard, color):            
                 continue
 
             M[i][j] = 1
 
 def spawn_pointers_king(i, j, M, chessboard, color):
-    chessboard[i][j] = {'K':M}     if color == 1 else     {'k':M}
+    piece                   = 'K' if color == 1 else 'k'
+    chessboard[i][j][piece] = M
     
     
     M[i][j] = 2
@@ -187,18 +199,19 @@ def spawn_pointers_king(i, j, M, chessboard, color):
         i,j = t
         if i >= 0 and j >= 0 and i < l and j < l:
 
-            if verify_has_piece(M, i, j, color, chessboard):            
+            if verify_has_piece(i, j, M, chessboard, color):            
                 continue
 
             M[i][j] = 1
 
 def spawn_pointers_pawn(i, j, M, chessboard, color):
-    chessboard[i][j] = {'P':M}     if color == 1 else     {'p':M}
+    piece                   = 'P' if color == 1 else 'p'
+    chessboard[i][j][piece] = M
 
     M[i][j] = 2
 
     if color == 1 and i == (len(M) - 1) or color == -1 and i == 0:
-        spawn_pointers_queen(i,j,M, chessboard, color)
+        spawn_pointers_queen(i, j, M, chessboard, color)
         return
     
     elif color == 1 and i == 1 or color == -1 and i == len(M) - 2:
@@ -210,7 +223,7 @@ def spawn_pointers_pawn(i, j, M, chessboard, color):
 
     for _ in range(1,step+1):
 
-        if verify_has_piece(M, i + (_*color), j, color, chessboard):
+        if verify_has_piece(i + (_*color), j, M, chessboard, color):
             return
         
         M[i + (_*color)][j] = 1
