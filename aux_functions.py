@@ -16,6 +16,7 @@ def get_initial_game(defs):
                 color                       = check_color(piece)
                 chessboard[lin][col]        = {}
                 chessboard[lin][col][piece] = get_square_matrix(8)
+                chessboard[lin][col]['ispinned'] = False
 
                 defs[piece.lower()](lin, col, chessboard[lin][col][piece], chessboard, color)
 
