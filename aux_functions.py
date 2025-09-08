@@ -13,10 +13,10 @@ def get_initial_game(defs):
             piece = chessboard[lin][col]
             if piece in white_pieces or piece in black_pieces:
 
-                color                       = check_color(piece)
-                chessboard[lin][col]        = {}
-                chessboard[lin][col][piece] = get_square_matrix(8)
-                chessboard[lin][col]['ispinned'] = False
+                color                               = check_color(piece)
+                chessboard[lin][col]                = {}
+                chessboard[lin][col][piece]         = get_square_matrix(8)
+                chessboard[lin][col]['ispinned']    = False
 
                 defs[piece.lower()](lin, col, chessboard[lin][col][piece], chessboard, color)
 
@@ -39,6 +39,27 @@ def get_initial_example():
         ['p','p','p','p','p','p','p','p'],
 
         ['r','h','b','q','k','b','h','r'],
+    ]
+
+    return chessboard
+
+def get_empty_example():
+    chessboard = [
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
+
+        ['.','.','.','.','.','.','.','.'],
     ]
 
     return chessboard
