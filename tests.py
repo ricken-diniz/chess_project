@@ -1,7 +1,86 @@
 from pieces_movement import *
 from aux_functions import *
+from chess_game import *
 
 class FeaturesTests():
+    def validate_initial_game(defs):
+        chessboard = get_initial_game(defs)
+
+        maps = []
+        for line in chessboard:
+            lin = []
+            for e in line:
+                if type(e) == dict:
+                    for k in e.keys():  
+                        lin.append(k)
+                        break
+                    maps.append(e)
+                else:
+                    lin.append(e)
+
+            print(' '.join(lin))
+
+        for e in maps:
+            for k in e.keys():
+                piece = k
+                break
+
+            print(f'\n{'':=^30}\n')
+            print(f'{piece:=^30}\n')
+
+            show_matrix(e[piece])
+
+            for lin in e[piece]:
+                for _ in range(len(lin)):
+                    lin[_] = str(lin[_])
+                print(' '.join(lin))
+
+    def validate_has_check():
+        chessboard = get_empty_example()
+        cases = [
+
+            # validated
+            (1 , 1, 1, False),
+            (-1,-1, 1, True),
+            (-1, 1, 1, True),
+            (1 ,-1, 1, True),
+            (1 ,-1,-1, True),
+            (1 , 1,-1, True),
+            (-1,-1,-1, False),
+            (-1, 1,-1, True),
+            
+            # invalidated
+            (1 , 1, 1, True),
+            (-1,-1, 1, False),
+            (-1, 1, 1, False),
+            (1 ,-1, 1, False),
+            (1 ,-1,-1, False),
+            (1 , 1,-1, False),
+            (-1,-1,-1, True),
+            (-1, 1,-1, False),
+        ]
+
+        count = 0
+
+        for tuple in cases:
+            qcolor, rcolor, turn, hcheck = tuple
+
+            M                               = get_square_matrix(8)
+            chessboard[0][0]                = {}
+            chessboard[0][0]['ispinned']    = False
+            spawn_pointers_queen(0, 0, M, chessboard, qcolor)
+
+            M                               = get_square_matrix(8)
+            chessboard[7][0]                = {}
+            chessboard[7][0]['ispinned']    = False
+            spawn_pointers_rock(7, 0, M, chessboard, rcolor)
+
+            if has_check(7, 7, chessboard, turn) == hcheck:
+                print(f'cases[{count}]: validated')
+            else:
+                print(f'cases[{count}]: invalidated')
+
+            count += 1
 
     def test_simple_moves(d, points, ispawn = False):
         for tuple in points:
@@ -81,7 +160,7 @@ def main():
         'p': spawn_pointers_pawn,
     }
     
-    # with FeaturesTests as ft:
+    ft = FeaturesTests
 
     # # ==================Simple Moves==================
     #     for e in defs.keys():
@@ -104,39 +183,11 @@ def main():
     #         ft.test_compound_moves(defs[e], points)
 
 
-    # ==================Initial Game==================
-    chessboard = get_initial_game(defs)
+    # # ==================Initial Game==================
+    ft.validate_initial_game(defs)
 
-    maps = []
-    for line in chessboard:
-        lin = []
-        for e in line:
-            if type(e) == dict:
-                for k in e.keys():  
-                    lin.append(k)
-                    break
-                maps.append(e)
-            else:
-                lin.append(e)
-
-        print(' '.join(lin))
-
-    for e in maps:
-        for k in e.keys():
-            piece = k
-            break
-
-        print(f'\n{'':=^30}\n')
-        print(f'{piece:=^30}\n')
-
-        show_matrix(e[piece])
-
-        for lin in e[piece]:
-            for _ in range(len(lin)):
-                lin[_] = str(lin[_])
-            print(' '.join(lin))
-
-
+    # ==================Verify has check==================
+    # ft.validate_has_check()
 
 if __name__ == '__main__':
     main()
