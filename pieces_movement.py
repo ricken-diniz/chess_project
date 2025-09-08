@@ -4,25 +4,23 @@ def verify_has_piece(i, j, M, chessboard, color):
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
     piece        = None
-    white        = False
-    black        = False
 
 
     if type(chessboard[i][j]) == dict:
         for k in chessboard[i][j].keys():
-            if (white := k in white_pieces) or (black := k in black_pieces):
+            if k in white_pieces or k in black_pieces:
                 piece = k
 
-    elif type(chessboard[i][j]) == str and (white := chessboard[i][j] in white_pieces) or (black := chessboard[i][j] in black_pieces):
+    elif type(chessboard[i][j]) == str and chessboard[i][j] in white_pieces or chessboard[i][j] in black_pieces:
         piece = chessboard[i][j]
 
 
-    print(white, black, piece)
     if piece is not None:
-        if piece in white_pieces and white or piece in black_pieces and black:
+
+        if piece in white_pieces and color == 1 or piece in black_pieces and color == -1:
             return True
         
-        else:
+        elif piece in white_pieces and color == -1 or piece in black_pieces and color == 1:
             M[i][j] = 3
             return True
     
@@ -83,8 +81,6 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
                 break
 
             M[lin][col] = 1
-        
-        # for _ in range()
 
     else:
         for _ in range(i, sdc - 1, -1):
