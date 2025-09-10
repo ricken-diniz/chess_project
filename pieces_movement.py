@@ -68,7 +68,7 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
 
     if sdc <= 0:
         for _ in range(i - 1, -1, -1):
-            x, y = affine_function(-1, _, l + sdc)
+            x, y        = affine_function(-1, _, l + sdc)
             lin, col    = (x, y)
 
             if verify_has_piece(lin, col, M, chessboard, color):            
@@ -77,7 +77,7 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
             M[lin][col] = 1
 
         for _ in range(i + 1, len(M) + sdc):
-            x, y = affine_function(-1, _, l + sdc)
+            x, y        = affine_function(-1, _, l + sdc)
             lin, col    = (x, y)
 
             if verify_has_piece(lin, col, M, chessboard, color):            
@@ -86,8 +86,8 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
             M[lin][col] = 1
 
     else:
-        for _ in range(i, sdc - 1, -1):
-            x, y = affine_function(-1, _, l + sdc)
+        for _ in range(i - 1, sdc - 1, -1):
+            x, y        = affine_function(-1, _, l + sdc)
             lin, col    = (x, y)
 
             if verify_has_piece(lin, col, M, chessboard, color):            
@@ -95,11 +95,11 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
 
             M[lin][col] = 1
 
-        for _ in range(i, len(M)):
-            x, y = affine_function(-1, _, l + sdc)
+        for _ in range(i + 1, len(M)):
+            x, y        = affine_function(-1, _, l + sdc)
             lin, col    = (x, y)
 
-            if verify_has_piece(lin, col, M, chessboard, color):            
+            if verify_has_piece(lin, col, M, chessboard, color): 
                 break
 
             M[lin][col] = 1
