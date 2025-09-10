@@ -30,6 +30,9 @@ def verify_has_piece(i, j, M, chessboard, color):
 
 
 def spawn_pointers_bishop(i,j, M,chessboard, color):
+    if not type(chessboard[i][j]) == dict:
+        chessboard[i][j] = {} 
+
     piece                   = 'B' if color == 1 else 'b'
     chessboard[i][j][piece] = M
 
@@ -104,6 +107,9 @@ def spawn_pointers_bishop(i,j, M,chessboard, color):
     M[i][j] = 2
 
 def spawn_pointers_rock(i, j, M, chessboard, color):
+    if not type(chessboard[i][j]) == dict:
+        chessboard[i][j] = {} 
+
     piece                   = 'R' if color == 1 else 'r'
     chessboard[i][j][piece] = M
 
@@ -138,6 +144,9 @@ def spawn_pointers_rock(i, j, M, chessboard, color):
     M[i][j] = 2
 
 def spawn_pointers_queen(i, j, M, chessboard, color):
+    if not type(chessboard[i][j]) == dict:
+        chessboard[i][j] = {} 
+
     spawn_pointers_rock(i,j, M, chessboard, color)
     spawn_pointers_bishop(i,j, M, chessboard, color)
 
@@ -145,6 +154,9 @@ def spawn_pointers_queen(i, j, M, chessboard, color):
     chessboard[i][j][piece] = M
 
 def spawn_pointers_horse(i, j, M, chessboard, color):
+    if not type(chessboard[i][j]) == dict:
+        chessboard[i][j] = {} 
+
     piece                   = 'H' if color == 1 else 'h'
     chessboard[i][j][piece] = M
 
@@ -173,6 +185,9 @@ def spawn_pointers_horse(i, j, M, chessboard, color):
             M[i][j] = 1
 
 def spawn_pointers_king(i, j, M, chessboard, color):
+    if not type(chessboard[i][j]) == dict:
+        chessboard[i][j] = {} 
+
     piece                   = 'K' if color == 1 else 'k'
     chessboard[i][j][piece] = M
     
@@ -201,6 +216,9 @@ def spawn_pointers_king(i, j, M, chessboard, color):
             M[i][j] = 1
 
 def spawn_pointers_pawn(i, j, M, chessboard, color):
+    if not type(chessboard[i][j]) == dict:
+        chessboard[i][j] = {} 
+
     piece                   = 'P' if color == 1 else 'p'
     chessboard[i][j][piece] = M
 
