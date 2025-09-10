@@ -3,8 +3,12 @@ from aux_functions import *
 from chess_game import *
 
 class FeaturesTests():
-    def validate_initial_game(defs):
-        chessboard = get_initial_game(defs)
+    def __init__(self, defs, points):
+        self.defs = defs
+        self.points = points
+
+    def validate_initial_game(self):
+        chessboard = get_initial_game(self.defs)
 
         maps = []
         for line in chessboard:
@@ -35,7 +39,7 @@ class FeaturesTests():
                     lin[_] = str(lin[_])
                 print(' '.join(lin))
 
-    def validate_has_check():
+    def validate_has_check(self):
         chessboard = get_empty_example()
         cases = [
 
@@ -82,52 +86,39 @@ class FeaturesTests():
 
             count += 1
 
-    def test_simple_moves(d, points, ispawn = False):
-        for tuple in points:
+    def validate_moves(self, compound = False):
+        for function in self.defs.keys():
+            piece = f'  {[function]}  '
+            print(f'\n{'':=^30}\n')
+            print(f'{piece:=^30}\n')
+            function = function.lower()
+            chessboard = get_game_example()
+
+            self.test_compound_moves(chessboard, function, compound)
+
+    def test_compound_moves(self, chessboard, function, compound):
+        for tuple in self.points:
+            if not compound:
+                chessboard = get_empty_example()
+
             i,j,n = tuple
 
-            M = get_square_matrix(8)  
-
-            d(i,j,M) if not ispawn else d(i,j,M,n)
-            show_matrix(M)
-            print(tuple)
-            for l in M:
-                print(' '.join(l))
-            print()
-
-    def test_compound_moves(d, points):
-        for tuple in points:
-            i,j,n = tuple
-
-            chessboard = get_game_example() 
             M = get_square_matrix(8)   
 
-            d(i,j,M,chessboard,n)
+            self.defs[function](i,j,M,chessboard,n)
             show_matrix(M)
-            print(tuple)
+
+            if n == 1:
+                color = 'branca'
+            else: 
+                color = 'preta'
+
+            print(f'Peça {function} na posição - {i}, {j} - de cor {color}')
+
             for l in M:
                 print(' '.join(l))
             print()
 
-    def test_initial_game(defs):
-        chessboard = get_game_example()
-
-        for lin in range(len(chessboard)):
-            for col in range(len(chessboard[lin])):
-
-                try:
-                    color = check_color(chessboard[lin][col])
-                    for k in chessboard[lin][col].keys():
-                        piece = k
-                        break
-                    chessboard[lin][col][piece] = get_square_matrix(8)
-
-                    defs[piece.lower()](lin,col, chessboard[lin][col][piece],chessboard, color)
-
-                except Exception as x:
-                    continue
-
-        return chessboard
 
 def main():
     
@@ -159,35 +150,26 @@ def main():
         'h': spawn_pointers_horse,
         'p': spawn_pointers_pawn,
     }
-    
-    ft = FeaturesTests
 
-    # # ==================Simple Moves==================
-    #     for e in defs.keys():
-    #         piece = f'  {e}  '
-    #         print(f'\n{'':=^30}\n')
-    #         print(f'{piece:=^30}\n')
-    #         if e == 'pawn':
-    #             ft.test_simple_moves(defs[e], points, True)
-    #         else:
-    #             ft.test_simple_moves(defs[e], points)
+    ft = FeaturesTests(defs, points)
 
-    # # ==================Compound Moves==================
-    #     for e in defs.keys():
-    #         piece = f'  {e}  '
-    #         print(f'\n{'':=^30}\n')
-    #         print(f'{piece:=^30}\n')
-    #         # if e == 'pawn':
-    #         #     ft.test_compound_moves(defs[e], points, True)
-            
-    #         ft.test_compound_moves(defs[e], points)
+    while (res := input('\nQual funcionalidade você quer testar?\n1. Movimento simples\n2. Movimento composto\n3. Game inicial\n4. Check\n\n > ')) != 'q':
 
+        if res == '1':
+            ft.validate_moves()
 
-    # # ==================Initial Game==================
-    ft.validate_initial_game(defs)
+        elif res == '2':
+            ft.validate_moves(True)
 
-    # ==================Verify has check==================
-    # ft.validate_has_check()
+        elif res == '3':
+            ft.validate_initial_game()
+
+        elif res == '4':
+            ft.validate_has_check()
+
+        else:
+            print('Insira uma entrada válida...\n')
+            continue
 
 if __name__ == '__main__':
     main()
