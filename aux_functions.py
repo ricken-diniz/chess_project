@@ -3,7 +3,7 @@ def get_square_matrix(n):
     return M
 
 def get_initial_game(defs):
-    chessboard   = get_initial_example()
+    chessboard   = get_chessboard('str')
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
 
@@ -13,7 +13,7 @@ def get_initial_game(defs):
             piece = chessboard[lin][col]
             if piece in white_pieces or piece in black_pieces:
 
-                color                               = check_color(piece)
+                color                               = 1 if piece in white_pieces else -1
                 chessboard[lin][col]                = {}
                 chessboard[lin][col][piece]         = get_square_matrix(8)
                 chessboard[lin][col]['ispinned']    = False
@@ -22,51 +22,50 @@ def get_initial_game(defs):
 
     return chessboard
 
-def get_initial_example():
-    chessboard = [
-        ['R','H','B','Q','K','B','H','R'],
+def get_chessboard(chessboard_type = 'dict'):
+    if chessboard_type == 'empty':
+        chessboard = [['.' for _ in range(8)] for _ in range(8)]
 
-        ['P','P','P','P','P','P','P','P'],
+    elif chessboard_type == 'dict':
+        chessboard = [
+            [{'R':1},{'H':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'H':1},{'R':1}],
 
-        ['.','.','.','.','.','.','.','.'],
+            [{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1}],
 
-        ['.','.','.','.','.','.','.','.'],
+            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
-        ['.','.','.','.','.','.','.','.'],
+            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
-        ['.','.','.','.','.','.','.','.'],
+            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
-        ['p','p','p','p','p','p','p','p'],
+            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
-        ['r','h','b','q','k','b','h','r'],
-    ]
+            [{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1}],
 
-    return chessboard
+            [{'r':1},{'h':1},{'b':1},{'q':1},{'k':1},{'b':1},{'h':1},{'r':1}],
+        ]
 
-def get_empty_example():
-    chessboard = [['.' for _ in range(8)] for _ in range(8)]
-    return chessboard
+    elif chessboard_type == 'str':
+        chessboard = [
+            ['R','H','B','Q','K','B','H','R'],
 
-def get_game_example():
-    chessboard = [
-        [{'R':1},{'H':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'H':1},{'R':1}],
+            ['P','P','P','P','P','P','P','P'],
 
-        [{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1}],
+            ['.','.','.','.','.','.','.','.'],
 
-        [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
+            ['.','.','.','.','.','.','.','.'],
 
-        [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
+            ['.','.','.','.','.','.','.','.'],
 
-        [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
+            ['.','.','.','.','.','.','.','.'],
 
-        [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
+            ['p','p','p','p','p','p','p','p'],
 
-        [{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1}],
-
-        [{'r':1},{'h':1},{'b':1},{'q':1},{'k':1},{'b':1},{'h':1},{'r':1}],
-    ]
+            ['r','h','b','q','k','b','h','r'],
+        ]
 
     return chessboard
+
 
 def deepcopy(M):
     matrix = []
@@ -98,15 +97,3 @@ def affine_function(a, x, b):
     y = a*x + b
 
     return x, y
-
-def check_color(piece):
-
-    white_pieces = ['K','Q','R','B','H','P']
-    black_pieces = ['k','q','r','b','h','p']
-
-    if piece in white_pieces:
-        return 1
-    elif piece in black_pieces:
-        return -1
-    
-    return Exception('Peça mal formulada')

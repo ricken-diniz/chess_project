@@ -40,7 +40,7 @@ class FeaturesTests():
                 print(' '.join(lin))
 
     def validate_has_check(self):
-        chessboard = get_empty_example()
+        chessboard = get_chessboard('empty')
         cases = [
 
             # validated
@@ -94,10 +94,10 @@ class FeaturesTests():
             function = function.lower()
 
             for tuple in self.points:
-                chessboard = get_game_example()
+                chessboard = get_chessboard('dict')
 
                 if not compound:
-                    chessboard = get_empty_example()    
+                    chessboard = get_chessboard('empty')    
 
                 i,j,n = tuple
 
