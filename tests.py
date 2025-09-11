@@ -92,32 +92,30 @@ class FeaturesTests():
             print(f'\n{'':=^30}\n')
             print(f'{piece:=^30}\n')
             function = function.lower()
-            chessboard = get_game_example()
 
-            self.test_compound_moves(chessboard, function, compound)
+            for tuple in self.points:
+                chessboard = get_game_example()
 
-    def test_compound_moves(self, chessboard, function, compound):
-        for tuple in self.points:
-            if not compound:
-                chessboard = get_empty_example()
+                if not compound:
+                    chessboard = get_empty_example()    
 
-            i,j,n = tuple
+                i,j,n = tuple
 
-            M = get_square_matrix(8)   
+                M = get_square_matrix(8)   
 
-            self.defs[function](i,j,M,chessboard,n)
-            show_matrix(M)
+                self.defs[function](i,j,M,chessboard,n)
+                show_matrix(M)
 
-            if n == 1:
-                color = 'branca'
-            else: 
-                color = 'preta'
+                if n == 1:
+                    color = 'branca'
+                else: 
+                    color = 'preta'
 
-            print(f'Peça {function} na posição - {i}, {j} - de cor {color}')
+                print(f'Peça {function} na posição - {i}, {j} - de cor {color}')
 
-            for l in M:
-                print(' '.join(l))
-            print()
+                for l in M:
+                    print(' '.join(l))
+                print()
 
 
 def main():
