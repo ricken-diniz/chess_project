@@ -1,43 +1,17 @@
 from pieces_movement import *
 from aux_functions import *
-from chess_game import *
+from chess_game import Game
 
 class FeaturesTests():
-    def __init__(self, defs, points):
-        self.defs = defs
+    def __init__(self, points):
         self.points = points
 
     def validate_initial_game(self):
-        chessboard = get_initial_game(self.defs)
+        with Piece as pc:
+            chessboard = get_initial_game(pc)
 
-        maps = []
-        for line in chessboard:
-            lin = []
-            for e in line:
-                if type(e) == dict:
-                    for k in e.keys():  
-                        lin.append(k)
-                        break
-                    maps.append(e)
-                else:
-                    lin.append(e)
-
-            print(' '.join(lin))
-
-        for e in maps:
-            for k in e.keys():
-                piece = k
-                break
-
-            print(f'\n{'':=^30}\n')
-            print(f'{piece:=^30}\n')
-
-            show_matrix(e[piece])
-
-            for lin in e[piece]:
-                for _ in range(len(lin)):
-                    lin[_] = str(lin[_])
-                print(' '.join(lin))
+        show_chessboard(chessboard)
+        show_pieces_map(chessboard)
 
     def validate_has_check(self):
         chessboard = get_chessboard('empty')
@@ -69,15 +43,14 @@ class FeaturesTests():
         for tuple in cases:
             qcolor, rcolor, turn, hcheck = tuple
 
-            M                               = get_square_matrix(8)
-            chessboard[0][0]                = {}
-            chessboard[0][0]['ispinned']    = False
-            spawn_pointers_queen(0, 0, M, chessboard, qcolor)
+            queen = 'Q' if qcolor == 1 else 'q'
+            rock = 'R' if rcolor == 1 else 'r'
 
-            M                               = get_square_matrix(8)
-            chessboard[7][0]                = {}
-            chessboard[7][0]['ispinned']    = False
-            spawn_pointers_rock(7, 0, M, chessboard, rcolor)
+            p = Piece(0, 0, chessboard, queen)
+            chessboard[0][0] = p
+
+            p = Piece(7, 0, chessboard, rock)
+            chessboard[7][0] = p
 
             if has_check(7, 7, chessboard, turn) == hcheck:
                 print(f'cases[{count}]: validated')
@@ -87,11 +60,11 @@ class FeaturesTests():
             count += 1
 
     def validate_moves(self, compound = False):
-        for function in self.defs.keys():
-            piece = f'  {[function]}  '
+        for piece in ['r','h','b','q','k','p']:
+
+            formatation = f'   {piece}   '
             print(f'\n{'':=^30}\n')
-            print(f'{piece:=^30}\n')
-            function = function.lower()
+            print(f'{formatation:=^30}\n')
 
             for tuple in self.points:
                 chessboard = get_chessboard('dict')
@@ -100,18 +73,19 @@ class FeaturesTests():
                     chessboard = get_chessboard('empty')    
 
                 i,j,n = tuple
-
-                M = get_square_matrix(8)   
-
-                self.defs[function](i,j,M,chessboard,n)
-                show_matrix(M)
-
                 if n == 1:
+                    piece = piece.upper()
                     color = 'branca'
                 else: 
+                    piece = piece.lower()
                     color = 'preta'
 
-                print(f'Peça {function} na posição - {i}, {j} - de cor {color}')
+                p = Piece(i, j, chessboard, piece)
+                chessboard[i][j] = p
+                M = chessboard[i][j].show_map()
+
+
+                print(f'Peça {piece} na posição - {i}, {j} - de cor {color}')
 
                 for l in M:
                     print(' '.join(l))
@@ -140,16 +114,8 @@ def main():
         (6,0,1),
         (7,0,1),
         ]
-    defs = {
-        'k': spawn_pointers_king,
-        'q': spawn_pointers_queen,
-        'r': spawn_pointers_rock,
-        'b': spawn_pointers_bishop,
-        'h': spawn_pointers_horse,
-        'p': spawn_pointers_pawn,
-    }
 
-    ft = FeaturesTests(defs, points)
+    ft = FeaturesTests(points)
 
     while (res := input('\nQual funcionalidade você quer testar?\n1. Movimento simples\n2. Movimento composto\n3. Game inicial\n4. Check\n\n > ')) != 'q':
 

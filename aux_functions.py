@@ -2,7 +2,7 @@ def get_square_matrix(n):
     M = [[0 for _ in range(n)] for _ in range(n)]
     return M
 
-def get_initial_game(defs):
+def get_initial_game(Piece: object):
     chessboard   = get_chessboard('str')
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
@@ -13,12 +13,8 @@ def get_initial_game(defs):
             piece = chessboard[lin][col]
             if piece in white_pieces or piece in black_pieces:
 
-                color                               = 1 if piece in white_pieces else -1
-                chessboard[lin][col]                = {}
-                chessboard[lin][col][piece]         = get_square_matrix(8)
-                chessboard[lin][col]['ispinned']    = False
-
-                defs[piece.lower()](lin, col, chessboard[lin][col][piece], chessboard, color)
+                p = Piece(lin, col, chessboard, piece)
+                chessboard[lin][col] = p
 
     return chessboard
 
@@ -30,9 +26,9 @@ def get_chessboard(chessboard_type = 'dict'):
         chessboard = [
             [{'R':1},{'H':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'H':1},{'R':1}],
 
-            [{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1}],
+            [{'P':1},{'P':1},{'P':1},{'P':1},{'p':1},{'P':1},{'P':1},{'P':1}],
 
-            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
+            [  '.'  ,{'p':1},  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
             [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
@@ -66,6 +62,30 @@ def get_chessboard(chessboard_type = 'dict'):
 
     return chessboard
 
+def show_chessboard(chessboard):
+    for line in chessboard:
+        lin = []
+        for e in line:
+            if type(e) == object:
+                lin.append(e.piece)
+            else:
+                lin.append(e)
+
+        print(' '.join(lin))
+
+def show_pieces_map(chessboard):
+    for line in chessboard:
+        for e in line:
+
+            piece = e.piece
+            print(f'\n{'':=^30}\n')
+            print(f'{piece:=^30}\n')
+
+            lin = []
+            for value in e.piece_map:
+                lin.append(str(value))
+            
+            print(' '.join(lin))
 
 def deepcopy(M):
     matrix = []
@@ -77,23 +97,24 @@ def deepcopy(M):
 
     return matrix
 
-def show_matrix(M):
-    for i in range(len(M)):
-        for j in range(len(M[i])):
-            
-            if M[i][j] == 1:
-                M[i][j] = f'\033[94m{1}\033[0m'
-                
-            elif M[i][j] == 2:
-                M[i][j] = f'\033[91m{2}\033[0m'
-                
-            elif M[i][j] == 3:
-                M[i][j] = f'\033[95m{3}\033[0m'
-                
-            else:
-                M[i][j] = f'{M[i][j]}'
-
 def affine_function(a, x, b):
     y = a*x + b
 
     return x, y
+
+def has_check(i, j, chessboard, turn):
+        pieces = [None, ['K','Q','R','B','H','P'], ['k','q','r','b','h','p']]
+
+        for l in range(len(chessboard)):
+            for c in range(len(chessboard)):
+                if type(chessboard[l][c]) is dict:
+                    for k in chessboard[l][c].keys():
+                        if k in pieces[-turn]:
+
+                            enimy_piece_map = chessboard[l][c][k]
+                            if enimy_piece_map[i][j] in [1,3]:
+                                return True
+
+                            break
+        
+        return False

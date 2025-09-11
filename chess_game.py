@@ -1,20 +1,13 @@
-def has_check(i, j, chessboard, turn):
-    pieces = [None, ['K','Q','R','B','H','P'], ['k','q','r','b','h','p']]
+from pieces_movement import *
+from aux_functions import *
 
-    for l in range(len(chessboard)):
-        for c in range(len(chessboard)):
-            if type(chessboard[l][c]) is dict:
-                for k in chessboard[l][c].keys():
-                    if k in pieces[-turn]:
+class Game():
+    def __init__(self):
+        self.chessboard = get_initial_game()
 
-                        enimy_piece_map = chessboard[l][c][k]
-                        if enimy_piece_map[i][j] in [1,3]:
-                            return True
+    def check_move(self, piece_arrange, movement):
+        ...
 
-                        break
-    
-    return False
-    # ...
 
 def main():
     turns = [None, 'white', 'black']
