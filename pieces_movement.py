@@ -1,6 +1,6 @@
 from aux_functions import affine_function
 
-def verify_has_piece(i, j, M, chessboard, color):
+def verify_has_piece(i, j, M, chessboard, color, ispawn = False):
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
     piece        = None
@@ -21,7 +21,8 @@ def verify_has_piece(i, j, M, chessboard, color):
             return True
         
         elif piece in white_pieces and color == -1 or piece in black_pieces and color == 1:
-            M[i][j] = 3
+            if not ispawn:
+                M[i][j] = 3
             return True
     
 
@@ -236,8 +237,15 @@ def spawn_pointers_pawn(i, j, M, chessboard, color):
 
 
     for _ in range(1,step+1):
-
-        if verify_has_piece(i + (_*color), j, M, chessboard, color):
-            return
         
+        if _ != 2:
+            if j > 0:
+                verify_has_piece(i + (_*color), j-1, M, chessboard, color)
+                
+            if j < len(M) - 1:
+                verify_has_piece(i + (_*color), j+1, M, chessboard, color)
+
+        if verify_has_piece(i + (_*color), j, M, chessboard, color, True):
+            continue
+
         M[i + (_*color)][j] = 1
