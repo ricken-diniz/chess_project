@@ -1,4 +1,4 @@
-from aux_functions import affine_function, get_square_matrix
+from aux_functions import affine_function, get_square_matrix, deepcopy, show_chessboard
 
 class Piece():
 
@@ -55,24 +55,32 @@ class Piece():
         return False
 
     def show_map(self):
-        M = self.piece_map
+        M = []
 
-        for i in range(len(M)):
-            for j in range(len(M[i])):
+        for i in range(len(self.piece_map)):
+            line = []
+            for j in range(len(self.piece_map[i])):
                 
-                if M[i][j] == 1:
-                    M[i][j] = f'\033[94m{1}\033[0m'
+                if self.piece_map[i][j] == 1:
+                    line.append(f'\033[94m{1}\033[0m')
                     
-                elif M[i][j] == 2:
-                    M[i][j] = f'\033[91m{2}\033[0m'
+                elif self.piece_map[i][j] == 2:
+                    line.append(f'\033[91m{2}\033[0m')
                     
-                elif M[i][j] == 3:
-                    M[i][j] = f'\033[95m{3}\033[0m'
+                elif self.piece_map[i][j] == 3:
+                    line.append(f'\033[95m{3}\033[0m')
                     
                 else:
-                    M[i][j] = f'{M[i][j]}'
+                    line.append(f'{self.piece_map[i][j]}')
+
+            M.append(line)
 
         return M
+
+    def update_move(self):
+        i, j = self.piece_arrange
+        self.defs[self.piece.lower()]()
+        self.piece_map[i][j] = 2
 
 
 

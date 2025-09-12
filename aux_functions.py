@@ -13,7 +13,7 @@ def get_initial_game(Piece: object):
             piece = chessboard[lin][col]
             if piece in white_pieces or piece in black_pieces:
 
-                p = Piece(lin, col, chessboard, piece)
+                p                    = Piece(lin, col, chessboard, piece)
                 chessboard[lin][col] = p
 
     return chessboard
@@ -60,18 +60,40 @@ def get_chessboard(chessboard_type = 'dict'):
             ['r','h','b','q','k','b','h','r'],
         ]
 
+    elif chessboard_type == 'tower':
+        chessboard = [
+            ['R','R','R','R','R','R','R','R'],
+
+            ['R','R','R','R','R','R','R','R'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['r','r','r','r','r','r','r','r'],
+
+            ['r','r','r','r','r','r','r','r'],
+        ]
+
     return chessboard
 
 def show_chessboard(chessboard):
+    count = 0
     for line in chessboard:
         lin = []
         for e in line:
-            if type(e) == object:
+            if type(e) != str:
                 lin.append(e.piece)
+                count += 1
             else:
                 lin.append(e)
 
         print(' '.join(lin))
+    print(count)
 
 def show_pieces_map(chessboard):
     for line in chessboard:
@@ -90,10 +112,11 @@ def show_pieces_map(chessboard):
 def deepcopy(M):
     matrix = []
 
-    for i in range(len(M)):
-        matrix.append([])
-        for e in [i]:
-            matrix[i].append(e)
+    for lin in M:
+        line = []
+        for i in range(len(lin)):
+            line.append(lin[i])
+        matrix.append(line)
 
     return matrix
 
@@ -118,3 +141,4 @@ def has_check(i, j, chessboard, turn):
                             break
         
         return False
+
