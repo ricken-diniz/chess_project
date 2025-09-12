@@ -1,4 +1,4 @@
-from aux_functions import affine_function, get_square_matrix, deepcopy, show_chessboard
+from utils import affine_function, get_square_matrix, deepcopy, show_chessboard
 
 class Piece():
 

@@ -1,5 +1,5 @@
 from pieces_movement import *
-from aux_functions import *
+from utils import *
 from chess_game import Game
 
 class FeaturesTests():

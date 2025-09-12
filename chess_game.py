@@ -1,5 +1,5 @@
 from pieces_movement import *
-from aux_functions import *
+from utils import *
 
 class Game():
     def __init__(self):
