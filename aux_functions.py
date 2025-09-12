@@ -2,8 +2,8 @@ def get_square_matrix(n):
     M = [[0 for _ in range(n)] for _ in range(n)]
     return M
 
-def get_initial_game(defs):
-    chessboard   = get_initial_example()
+def get_initial_game(Piece: object):
+    chessboard   = get_chessboard('str')
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
 
@@ -13,100 +13,132 @@ def get_initial_game(defs):
             piece = chessboard[lin][col]
             if piece in white_pieces or piece in black_pieces:
 
-                color                               = check_color(piece)
-                chessboard[lin][col]                = {}
-                chessboard[lin][col][piece]         = get_square_matrix(8)
-                chessboard[lin][col]['ispinned']    = False
-
-                defs[piece.lower()](lin, col, chessboard[lin][col][piece], chessboard, color)
+                p                    = Piece(lin, col, chessboard, piece)
+                chessboard[lin][col] = p
 
     return chessboard
 
-def get_initial_example():
-    chessboard = [
-        ['R','H','B','Q','K','B','H','R'],
+def get_chessboard(chessboard_type = 'dict'):
+    if chessboard_type == 'empty':
+        chessboard = [['.' for _ in range(8)] for _ in range(8)]
 
-        ['P','P','P','P','P','P','P','P'],
+    elif chessboard_type == 'dict':
+        chessboard = [
+            [{'R':1},{'H':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'H':1},{'R':1}],
 
-        ['.','.','.','.','.','.','.','.'],
+            [{'P':1},{'P':1},{'P':1},{'P':1},{'p':1},{'P':1},{'P':1},{'P':1}],
 
-        ['.','.','.','.','.','.','.','.'],
+            [  '.'  ,{'p':1},  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
-        ['.','.','.','.','.','.','.','.'],
+            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
-        ['.','.','.','.','.','.','.','.'],
+            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
-        ['p','p','p','p','p','p','p','p'],
+            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
 
-        ['r','h','b','q','k','b','h','r'],
-    ]
+            [{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1}],
+
+            [{'r':1},{'h':1},{'b':1},{'q':1},{'k':1},{'b':1},{'h':1},{'r':1}],
+        ]
+
+    elif chessboard_type == 'str':
+        chessboard = [
+            ['R','H','B','Q','K','B','H','R'],
+
+            ['P','P','P','P','P','P','P','P'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['p','p','p','p','p','p','p','p'],
+
+            ['r','h','b','q','k','b','h','r'],
+        ]
+
+    elif chessboard_type == 'tower':
+        chessboard = [
+            ['R','R','R','R','R','R','R','R'],
+
+            ['R','R','R','R','R','R','R','R'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['r','r','r','r','r','r','r','r'],
+
+            ['r','r','r','r','r','r','r','r'],
+        ]
 
     return chessboard
 
-def get_empty_example():
-    chessboard = [['.' for _ in range(8)] for _ in range(8)]
-    return chessboard
+def show_chessboard(chessboard):
+    count = 0
+    for line in chessboard:
+        lin = []
+        for e in line:
+            if type(e) != str:
+                lin.append(e.piece)
+                count += 1
+            else:
+                lin.append(e)
 
-def get_game_example():
-    chessboard = [
-        [{'R':1},{'H':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'H':1},{'R':1}],
+        print(' '.join(lin))
+    print(count)
 
-        [{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1},{'P':1}],
+def show_pieces_map(chessboard):
+    for line in chessboard:
+        for e in line:
 
-        [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
+            piece = e.piece
+            print(f'\n{'':=^30}\n')
+            print(f'{piece:=^30}\n')
 
-        [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-        [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-        [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-        [{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1}],
-
-        [{'r':1},{'h':1},{'b':1},{'q':1},{'k':1},{'b':1},{'h':1},{'r':1}],
-    ]
-
-    return chessboard
+            lin = []
+            for value in e.piece_map:
+                lin.append(str(value))
+            
+            print(' '.join(lin))
 
 def deepcopy(M):
     matrix = []
 
-    for i in range(len(M)):
-        matrix.append([])
-        for e in [i]:
-            matrix[i].append(e)
+    for lin in M:
+        line = []
+        for i in range(len(lin)):
+            line.append(lin[i])
+        matrix.append(line)
 
     return matrix
-
-def show_matrix(M):
-    for i in range(len(M)):
-        for j in range(len(M[i])):
-            
-            if M[i][j] == 1:
-                M[i][j] = f'\033[94m{1}\033[0m'
-                
-            elif M[i][j] == 2:
-                M[i][j] = f'\033[91m{2}\033[0m'
-                
-            elif M[i][j] == 3:
-                M[i][j] = f'\033[95m{3}\033[0m'
-                
-            else:
-                M[i][j] = f'{M[i][j]}'
 
 def affine_function(a, x, b):
     y = a*x + b
 
     return x, y
 
-def check_color(piece):
+def has_check(i, j, chessboard, turn):
+        pieces = [None, ['K','Q','R','B','H','P'], ['k','q','r','b','h','p']]
 
-    white_pieces = ['K','Q','R','B','H','P']
-    black_pieces = ['k','q','r','b','h','p']
+        for l in range(len(chessboard)):
+            for c in range(len(chessboard)):
+                if type(chessboard[l][c]) is dict:
+                    for k in chessboard[l][c].keys():
+                        if k in pieces[-turn]:
 
-    if piece in white_pieces:
-        return 1
-    elif piece in black_pieces:
-        return -1
-    
-    return Exception('Peça mal formulada')
+                            enimy_piece_map = chessboard[l][c][k]
+                            if enimy_piece_map[i][j] in [1,3]:
+                                return True
+
+                            break
+        
+        return False
+
