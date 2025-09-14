@@ -97,14 +97,14 @@ def show_chessboard(chessboard):
 
 def show_pieces_map(chessboard):
     for line in chessboard:
-        for e in line:
-
-            piece = e.piece
-            print(f'\n{'':=^30}\n')
-            print(f'{piece:=^30}\n')
+        for piece in line:
+            _ = ''
+            piece_name = piece.piece
+            print(f'\n{_:=^30 }\n')
+            print(f'{piece_name:=^30}\n')
 
             lin = []
-            for value in e.piece_map:
+            for value in piece.piece_map:
                 lin.append(str(value))
             
             print(' '.join(lin))

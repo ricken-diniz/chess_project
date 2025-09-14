@@ -44,10 +44,18 @@ def main():
         show_chessboard(game.chessboard)
 
         piece_arrange = (int(input('peça i:')), int(input('peça j:')))
+        i, j = piece_arrange
+        if game.chessboard[i][j] == '.':
+            print('Tente novamente')
+            continue
+        elif game.chessboard[i][j].piece_color != turn:
+            print('Tente novamente')
+            continue
         movement = (int(input('destino i:')), int(input('destino j:')))
 
         if game.move_piece(piece_arrange, movement):
             print('Movimentando...')
+            turn = turn * -1
         else:
             print('Tente novamente')
 
