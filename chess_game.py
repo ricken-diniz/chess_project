@@ -12,7 +12,7 @@ class Game():
         if type(self.chessboard[i][j]) == Piece:
             
             if self.chessboard[i][j].piece_map[l][c] in [1,3]:
-                piece = self.chessboard[i][j].piece
+                piece                   = self.chessboard[i][j].piece
                 self.chessboard[i][j]   = '.'
                 p                       = Piece(l, c, self.chessboard, piece)
                 self.chessboard[l][c]   = p
@@ -33,8 +33,8 @@ class Game():
 
 
 def main():
-    turns = [None, 'white', 'black']
-    turn = 1 
+    turns = [None, 'black', 'white']
+    turn = -1 
     left_hook = True
     right_hook = True
     incheck = False

@@ -8,7 +8,7 @@ class Piece():
 
         self.piece_ispinned = False
         self.piece_arrange  = (i, j)
-        self.piece_color    = 1 if piece in white_pieces else -1 if piece in black_pieces else Exception
+        self.piece_color    = -1 if piece in white_pieces else 1 if piece in black_pieces else Exception
         self.chessboard     = chessboard
         self.piece_map      = get_square_matrix(8)
         self.piece          = piece
@@ -43,10 +43,10 @@ class Piece():
 
         if piece is not None:
 
-            if piece in white_pieces and self.piece_color == 1 or piece in black_pieces and self.piece_color == -1:
+            if piece in white_pieces and self.piece_color == -1 or piece in black_pieces and self.piece_color == 1:
                 return True
             
-            elif piece in white_pieces and self.piece_color == -1 or piece in black_pieces and self.piece_color == 1:
+            elif piece in white_pieces and self.piece_color == 1 or piece in black_pieces and self.piece_color == -1:
                 if not ispawn:
                     self.piece_map[i][j] = 3
                 return True
