@@ -33,7 +33,7 @@ class Game():
 
 
 def main():
-    turns = [None, 'black', 'white']
+    turns = [None, 'pretas', 'brancas']
     turn = -1 
     left_hook = True
     right_hook = True
@@ -43,15 +43,28 @@ def main():
     while True:
         show_chessboard(game.chessboard)
 
-        piece_arrange = (int(input('peça i:')), int(input('peça j:')))
-        i, j = piece_arrange
+        piece_arrange = input('Selecione sua peça: ')
+        if (arrange := get_arrange(piece_arrange)) != False:
+            i, j = arrange
+            piece_arrange = arrange
+        else:
+            print('Selecione uma coordenada válida!')
+            continue
+
         if game.chessboard[i][j] == '.':
-            print('Tente novamente')
+            print('Selecione uma peça, você selecionou um espaço vazio...')
             continue
         elif game.chessboard[i][j].piece_color != turn:
-            print('Tente novamente')
+            print(f'Agora é vez das {turns[turn]}, jogue com uma peça válida!')
             continue
-        movement = (int(input('destino i:')), int(input('destino j:')))
+        
+        movement = input('Selecione o destino: ')
+        if (arrange := get_arrange(movement)) != False:
+            movement = arrange
+        else:
+            print('Selecione uma coordenada válida!')
+            continue
+
 
         if game.move_piece(piece_arrange, movement):
             print('Movimentando...')

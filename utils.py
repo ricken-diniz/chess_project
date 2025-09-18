@@ -147,3 +147,30 @@ def has_check(i, j, chessboard, turn):
         
         return False
 
+def get_arrange(coordinates):
+    letters = {
+        'A': 0,
+        'B': 1,
+        'C': 2,
+        'D': 3,
+        'E': 4,
+        'F': 5,
+        'G': 6,
+        'H': 7
+    }
+    numbers = {
+        '8': 0,
+        '7': 1,
+        '6': 2,
+        '5': 3,
+        '4': 4,
+        '3': 5,
+        '2': 6,
+        '1': 7,
+    }
+
+    if len(coordinates) == 2 and coordinates[0].upper() in 'ABCDEFGH' and coordinates[1] in '12345678':
+        return numbers[coordinates[1]], letters[coordinates[0].upper()]
+    
+    else:
+        return False
