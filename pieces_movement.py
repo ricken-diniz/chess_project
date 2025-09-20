@@ -67,8 +67,8 @@ class Piece():
                 elif self.piece_map[i][j] == 2:
                     line.append(f'\033[91m{2}\033[0m')
                     
-                elif self.piece_map[i][j] == 3:
-                    line.append(f'\033[95m{3}\033[0m')
+                elif self.piece_map[i][j] in [3,4]:
+                    line.append(f'\033[95m{self.piece_map[i][j]}\033[0m')
                     
                 else:
                     line.append(f'{self.piece_map[i][j]}')
