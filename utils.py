@@ -1,9 +1,11 @@
+
+
 def get_square_matrix(n):
     M = [[0 for _ in range(n)] for _ in range(n)]
     return M
 
 def get_initial_game(Piece: object):
-    chessboard   = get_chessboard('str')
+    chessboard   = get_chessboard('hook')
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
 
@@ -60,6 +62,25 @@ def get_chessboard(chessboard_type = 'dict'):
             ['R','H','B','Q','K','B','H','R'],
         ]
 
+    elif chessboard_type == 'hook':
+        chessboard = [
+            ['r','.','.','.','k','.','.','r'],
+
+            ['p','p','p','p','p','p','p','p'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['P','P','P','P','P','P','P','P'],
+
+            ['R','.','.','.','K','.','.','R'],
+        ]
+
     elif chessboard_type == 'tower':
         chessboard = [
             ['r','r','r','r','r','r','r','r'],
@@ -114,7 +135,40 @@ def show_pieces_map(chessboard):
             
             print(' '.join(lin))
 
+def show_movies(chessboard, piece_map):
+
+    i_axis = 8
+    for i in range(len(chessboard)):
+        lin = []
+        for j in range(len(chessboard[i])):
+            if type(chessboard[i][j]) != str:
+                e = chessboard[i][j].piece
+                
+            else:
+                e = chessboard[i][j]
+            
+            if piece_map[i][j] == 1:
+                lin.append(f'\033[94m{e}\033[0m')
+                
+            elif piece_map[i][j] == 2:
+                lin.append(f'\033[91m{e}\033[0m')
+                
+            elif piece_map[i][j] in [3,4]:
+                lin.append(f'\033[95m{e}\033[0m')
+                
+            else:
+                lin.append(e)
+        
+        
+        print(f'{i_axis}  '+' '.join(lin))
+        i_axis -= 1
+        
+    print()
+    print('   A B C D E F G H')
+    print()
+
 def deepcopy(M):
+
     matrix = []
 
     for lin in M:
@@ -131,19 +185,17 @@ def affine_function(a, x, b):
     return x, y
 
 def has_check(i, j, chessboard, turn):
-        pieces = [None, ['k','q','r','b','h','p'], ['K','Q','R','B','H','P']]
-
+        
         for l in range(len(chessboard)):
             for c in range(len(chessboard)):
-                if type(chessboard[l][c]) is dict:
-                    for k in chessboard[l][c].keys():
-                        if k in pieces[-turn]:
+                if type(chessboard[l][c]) != str:
+                    if chessboard[l][c].piece_color != turn:
 
-                            enimy_piece_map = chessboard[l][c][k]
-                            if enimy_piece_map[i][j] in [1,3]:
-                                return True
+                        enimy_piece_map = chessboard[l][c].piece_map
+                        if enimy_piece_map[i][j] in [1,3]:
+                            return True
 
-                            break
+                        break
         
         return False
 

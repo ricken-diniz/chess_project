@@ -43,8 +43,8 @@ class FeaturesTests():
         for tuple in cases:
             qcolor, rcolor, turn, hcheck = tuple
 
-            queen = 'Q' if qcolor == 1 else 'q'
-            rock = 'R' if rcolor == 1 else 'r'
+            queen = 'Q' if qcolor == -1 else 'q'
+            rock = 'R' if rcolor == -1 else 'r'
 
             p = Piece(0, 0, chessboard, queen)
             chessboard[0][0] = p
