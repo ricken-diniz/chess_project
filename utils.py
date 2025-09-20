@@ -5,7 +5,7 @@ def get_square_matrix(n):
     return M
 
 def get_initial_game(Piece: object):
-    chessboard   = get_chessboard('hook')
+    chessboard   = get_chessboard('str')
     white_pieces = ['K','Q','R','B','H','P']
     black_pieces = ['k','q','r','b','h','p']
 
@@ -119,7 +119,6 @@ def show_chessboard(chessboard):
     print()
     print('   A B C D E F G H')
     print()
-    print(count)
 
 def show_pieces_map(chessboard):
     for line in chessboard:

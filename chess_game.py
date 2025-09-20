@@ -1,9 +1,12 @@
 from pieces_movement import *
 from utils import *
+import os
 
 class Game():
     def __init__(self):
         self.chessboard = get_initial_game(Piece)
+        self.white_kills = []
+        self.black_kills = []
         self.white_left_hook = True
         self.white_right_hook = True
         self.black_left_hook = True
@@ -19,17 +22,28 @@ class Game():
         l, c = movement
 
         if type(self.chessboard[i][j]) == Piece:
-            print('a')
+            
             
             if self.chessboard[i][j].piece_map[l][c] in [1,3,4]:
                 color                   = self.chessboard[i][j].piece_color
                 piece                   = self.chessboard[i][j].piece
 
+                if self.chessboard[i][j].piece_map[l][c] == 3:
+                    if color == 1:
+                        self.black_kills.append(self.chessboard[l][c].piece)
+                    elif color == -1:
+                        self.white_kills.append(self.chessboard[l][c].piece)
+
                 if self.chessboard[i][j].piece_map[l][c] == 4 and piece.lower() == 'p':
+                    if color == 1:
+                        self.black_kills.append('P')
+                    elif color == -1:
+                        self.white_kills.append('p')
                     self.chessboard[l-1*color][c] = '.'
+
                 elif self.chessboard[i][j].piece_map[l][c] == 4 and piece.lower() == 'k':
                     if not self.hook(l, c, color):
-                        print('b')
+                                                                            
                         return False
 
                 self.chessboard[i][j]   = '.'
@@ -66,13 +80,13 @@ class Game():
 
     def hook(self, l, c, color):
         if has_check(l, 4, self.chessboard, color):
-            print('c')
+            
             return False
 
         if c == 6:
             for _ in range(5, c + 1):
                 if type(self.chessboard[l][_]) == Piece or has_check(l, _, self.chessboard, color):
-                    print('d')
+                    
                     return False
                 
             if l == 7 and self.white_right_hook:
@@ -89,7 +103,7 @@ class Game():
         elif c == 2:
             for _ in range(3, c - 1, - 1):
                 if type(self.chessboard[l][_]) == Piece or has_check(l, _, self.chessboard, color):
-                    print('e')
+                    
                     return False
                 
             if l == 7 and self.white_left_hook:
@@ -154,26 +168,47 @@ def main():
     incheck = False 
     game = Game()
 
+    os.system('clear')
     while True:
+        print('Black: ' + " ".join(game.black_kills))
+        print()
         show_chessboard(game.chessboard)
+        print('White: ' + " ".join(game.white_kills))
+        print()
 
+        print(f'Vez das {turns[turn]}.')
         piece_arrange = input('Selecione sua peça: ')
         if (arrange := get_arrange(piece_arrange)) != False:
             i, j = arrange
             piece_arrange = arrange
         else:
+            os.system('clear')
             print('Selecione uma coordenada válida!')
+            print()
             continue
 
         if game.chessboard[i][j] == '.':
+            os.system('clear')
             print('Selecione uma peça, você selecionou um espaço vazio...')
+            print()
             continue
         elif game.chessboard[i][j].piece_color != turn:
+            os.system('clear')
             print(f'Agora é vez das {turns[turn]}, jogue com uma peça válida!')
+            print()
             continue
         
+        os.system('clear')
+        print('Black: ' + " ".join(game.black_kills))
+        print()
         show_movies(game.chessboard, game.chessboard[i][j].piece_map)
-        movement = input('Selecione o destino: ')
+        print('White: ' + " ".join(game.white_kills))
+        print()
+        
+        movement = input('Selecione o destino (ou digite C para escolher outra peça): ')
+        if movement.lower() == 'c':
+            continue
+
         if (arrange := get_arrange(movement)) != False:
             movement = arrange
         else:
