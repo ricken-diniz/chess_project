@@ -60,7 +60,7 @@ class FeaturesTests():
             count += 1
 
     def validate_moves(self, compound = False):
-        for piece in ['r','h','b','q','k','p']:
+        for piece in ['r','n','b','q','k','p']:
 
             formatation = f'   {piece}   '
             print(f'\n{'':=^30}\n')

@@ -1,12 +1,11 @@
-from utils import affine_function, get_square_matrix, deepcopy, show_chessboard
+from utils import affine_function, get_square_matrix, deepcopy_list, has_check
 
 class Piece():
 
-    def __init__(self, i, j, chessboard, piece):
-        white_pieces = ['K','Q','R','B','H','P']
-        black_pieces = ['k','q','r','b','h','p']
+    def __init__(self, i, j, chessboard, piece, piece_map = None):
+        white_pieces = ['K','Q','R','B','N','P']
+        black_pieces = ['k','q','r','b','n','p']
 
-        self.piece_ispinned = False
         self.piece_arrange  = (i, j)
         self.piece_color    = -1 if piece in white_pieces else 1 if piece in black_pieces else Exception
         self.chessboard     = chessboard
@@ -14,19 +13,22 @@ class Piece():
         self.piece          = piece
         self.defs = {
             'r': self.spawn_pointers_rock,
-            'h': self.spawn_pointers_horse,
+            'n': self.spawn_pointers_horse,
             'b': self.spawn_pointers_bishop,
             'q': self.spawn_pointers_queen,
             'k': self.spawn_pointers_king,
             'p': self.spawn_pointers_pawn
         }
-        
-        self.defs[self.piece.lower()]()
-        self.piece_map[i][j] = 2
+
+        if not piece_map is None:
+            self.piece_map = deepcopy_list(piece_map)
+        else:
+            self.defs[self.piece.lower()]()
+            self.piece_map[i][j] = 2
 
     def verify_has_piece(self, i, j, ispawn = False):
-        white_pieces = ['K','Q','R','B','H','P']
-        black_pieces = ['k','q','r','b','h','p']
+        white_pieces = ['K','Q','R','B','N','P']
+        black_pieces = ['k','q','r','b','n','p']
         piece        = None
 
         if type(self.chessboard[i][j]) == Piece:
@@ -82,6 +84,9 @@ class Piece():
         self.defs[self.piece.lower()]()
         self.piece_map[i][j] = 2
 
+    def clone(self):
+        i, j = self.piece_arrange
+        return Piece(i, j, self.chessboard, self.piece, self.piece_map)
 
 
     def spawn_pointers_bishop(self):
@@ -100,7 +105,7 @@ class Piece():
         sdc = secondary_diagonal_coefficient
 
         for _ in range(less - 1, -1, -1):
-            x, y = affine_function(1, _, pdc)
+            x, y        = affine_function(1, _, pdc)
             lin, col    = (x, y)     if j > i else     (y, x)
             
             if self.verify_has_piece(lin, col):            
@@ -109,7 +114,7 @@ class Piece():
             M[lin][col] = 1
 
         for _ in range(less + 1, len(M) - pdc):
-            x, y = affine_function(1, _, pdc)
+            x, y        = affine_function(1, _, pdc)
             lin, col    = (x, y)     if j > i else     (y, x)
             
             if self.verify_has_piece(lin, col):            
@@ -237,6 +242,9 @@ class Piece():
         for t in houses:
             i,j = t
             if i >= 0 and j >= 0 and i < l and j < l:
+
+                if has_check(i, j, self.chessboard, self.piece_color):
+                    continue
 
                 if self.verify_has_piece(i, j):            
                     continue

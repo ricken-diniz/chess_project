@@ -5,9 +5,9 @@ def get_square_matrix(n):
     return M
 
 def get_initial_game(Piece: object):
-    chessboard   = get_chessboard('str')
-    white_pieces = ['K','Q','R','B','H','P']
-    black_pieces = ['k','q','r','b','h','p']
+    chessboard   = get_chessboard('shepherd')
+    white_pieces = ['K','Q','R','B','N','P']
+    black_pieces = ['k','q','r','b','n','p']
 
     for lin in range(len(chessboard)):
         for col in range(len(chessboard[lin])):
@@ -26,7 +26,7 @@ def get_chessboard(chessboard_type = 'dict'):
 
     elif chessboard_type == 'dict':
         chessboard = [
-            [{'r':1},{'h':1},{'b':1},{'q':1},{'k':1},{'b':1},{'h':1},{'r':1}],
+            [{'r':1},{'n':1},{'b':1},{'q':1},{'k':1},{'b':1},{'n':1},{'r':1}],
 
             [{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1}],
 
@@ -40,12 +40,12 @@ def get_chessboard(chessboard_type = 'dict'):
 
             [{'P':1},{'P':1},{'P':1},{'P':1},{'p':1},{'P':1},{'P':1},{'P':1}],
 
-            [{'R':1},{'H':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'H':1},{'R':1}],
+            [{'R':1},{'N':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'N':1},{'R':1}],
         ]
 
     elif chessboard_type == 'str':
         chessboard = [
-            ['r','h','b','q','k','b','h','r'],
+            ['r','n','b','q','k','b','n','r'],
 
             ['p','p','p','p','p','p','p','p'],
 
@@ -59,7 +59,7 @@ def get_chessboard(chessboard_type = 'dict'):
 
             ['P','P','P','P','P','P','P','P'],
 
-            ['R','H','B','Q','K','B','H','R'],
+            ['R','N','B','Q','K','B','N','R'],
         ]
 
     elif chessboard_type == 'hook':
@@ -79,6 +79,25 @@ def get_chessboard(chessboard_type = 'dict'):
             ['P','P','P','P','P','P','P','P'],
 
             ['R','.','.','.','K','.','.','R'],
+        ]
+
+    elif chessboard_type == 'shepherd':
+        chessboard = [
+            ['r','.','b','q','k','b','n','r'],
+
+            ['.','p','p','p','.','p','p','p'],
+
+            ['p','.','n','.','.','.','.','.'],
+
+            ['.','.','.','.','p','.','.','.'],
+
+            ['.','.','B','.','P','.','.','.'],
+
+            ['.','.','.','.','.','Q','.','.'],
+
+            ['P','P','P','P','.','P','P','P'],
+
+            ['R','N','B','.','K','.','N','R'],
         ]
 
     elif chessboard_type == 'tower':
@@ -177,6 +196,15 @@ def deepcopy(M):
         matrix.append(line)
 
     return matrix
+
+def deepcopy_list(l):
+
+    new_list = []
+
+    for e in l:
+        new_list.append(e)
+    
+    return new_list
 
 def affine_function(a, x, b):
     y = a*x + b
