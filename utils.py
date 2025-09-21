@@ -4,8 +4,8 @@ def get_square_matrix(n):
     M = [[0 for _ in range(n)] for _ in range(n)]
     return M
 
-def get_initial_game(Piece: object):
-    chessboard   = get_chessboard('shepherd')
+def get_initial_game(Piece: object, gametype = 'normalgame'):
+    chessboard   = get_chessboard(gametype)
     white_pieces = ['K','Q','R','B','N','P']
     black_pieces = ['k','q','r','b','n','p']
 
@@ -24,26 +24,7 @@ def get_chessboard(chessboard_type = 'dict'):
     if chessboard_type == 'empty':
         chessboard = [['.' for _ in range(8)] for _ in range(8)]
 
-    elif chessboard_type == 'dict':
-        chessboard = [
-            [{'r':1},{'n':1},{'b':1},{'q':1},{'k':1},{'b':1},{'n':1},{'r':1}],
-
-            [{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1}],
-
-            [  '.'  ,{'p':1},  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-            [{'P':1},{'P':1},{'P':1},{'P':1},{'p':1},{'P':1},{'P':1},{'P':1}],
-
-            [{'R':1},{'N':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'N':1},{'R':1}],
-        ]
-
-    elif chessboard_type == 'str':
+    elif chessboard_type == 'normalgame':
         chessboard = [
             ['r','n','b','q','k','b','n','r'],
 
@@ -144,7 +125,9 @@ def show_pieces_map(chessboard):
         for piece in line:
             _ = ''
             piece_name = piece.piece
-            print(f'\n{_:=^30 }\n')
+            print()
+            print(f'{"":=^30 }')
+            print()
             print(f'{piece_name:=^30}\n')
 
             lin = []
@@ -219,10 +202,10 @@ def has_check(i, j, chessboard, turn):
                     if chessboard[l][c].piece_color != turn:
 
                         enimy_piece_map = chessboard[l][c].piece_map
-                        if enimy_piece_map[i][j] in [1,3]:
+                        if enimy_piece_map[i][j] in [3,5] or chessboard[l][c].piece.lower() != 'p' and enimy_piece_map[i][j] == 1:
                             return True
 
-                        break
+                        # break
         
         return False
 

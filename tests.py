@@ -1,17 +1,15 @@
 from pieces_movement import *
 from utils import *
-from chess_game import Game
 
 class FeaturesTests():
     def __init__(self, points):
         self.points = points
 
     def validate_initial_game(self):
-        with Piece as pc:
-            chessboard = get_initial_game(pc)
+        chessboard = get_initial_game(Piece)
 
         show_chessboard(chessboard)
-        show_pieces_map(chessboard)
+        # show_pieces_map(chessboard)
 
     def validate_has_check(self):
         chessboard = get_chessboard('empty')
@@ -67,10 +65,11 @@ class FeaturesTests():
             print(f'{formatation:=^30}\n')
 
             for tuple in self.points:
-                chessboard = get_chessboard('dict')
-
                 if not compound:
-                    chessboard = get_chessboard('empty')    
+                    chessboard = get_initial_game(Piece,'empty')    
+                else:
+                    chessboard = get_initial_game(Piece)
+
 
                 i,j,n = tuple
                 if n == 1:
@@ -80,6 +79,7 @@ class FeaturesTests():
                     piece = piece.lower()
                     color = 'preta'
 
+                chessboard[i][j] = '.'
                 p = Piece(i, j, chessboard, piece)
                 chessboard[i][j] = p
                 M = chessboard[i][j].show_map()
@@ -117,6 +117,15 @@ def main():
 
     ft = FeaturesTests(points)
 
+    print()
+    print('Mensagem do Sistema')
+    print('Informações úteis')
+    print('Valor 1: casa habilitada para movimentar')
+    print('Valor 2: casa ocupada pela peça')
+    print('Valor 3: casa habilitada para comer')
+    print('Valor 4: movimento especial')
+    print('Valor 5: próxima casa desabilitada para movimentar')
+    print()
     while (res := input('\nQual funcionalidade você quer testar?\n1. Movimento simples\n2. Movimento composto\n3. Game inicial\n4. Check\n\n > ')) != 'q':
 
         if res == '1':
