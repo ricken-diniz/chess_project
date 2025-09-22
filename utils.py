@@ -202,7 +202,9 @@ def has_check(i, j, chessboard, turn):
                     if chessboard[l][c].piece_color != turn:
 
                         enimy_piece_map = chessboard[l][c].piece_map
-                        if enimy_piece_map[i][j] in [3,5] or chessboard[l][c].piece.lower() != 'p' and enimy_piece_map[i][j] == 1:
+                        if enimy_piece_map[i][j] in [3,7] or chessboard[l][c].piece.lower() != 'p' and enimy_piece_map[i][j] == 1:
+                            print(enimy_piece_map[i][j])
+                            print()
                             return True
 
                         # break

@@ -36,7 +36,7 @@ class Game():
                         return False
                     
                 if not self.validate_move(i, j, l, c, turn):
-                    return False
+                    return 'Você não pode mover para essa casa, seu rei ficará em check!'
                 
                 self.check_hook(piece, i, j, color) 
 
@@ -66,7 +66,7 @@ class Game():
                             elif enemy_king == 'K':
                                 self.white_check = True
                             
-                            if self.has_mate(-turn, self.chessboard[l][c]):
+                            if self.has_mate(turn, self.chessboard[l][c]):
                                 return 'End Game'
                     
                 return True
@@ -183,6 +183,11 @@ class Game():
         p        = Piece(l, c, cb, piece)
         cb[l][c] = p #
         
+        if p.piece.lower() == 'k':
+            if color == -1:
+                self.white_king_position = i, j
+            elif color == 1:
+                self.black_king_position = i, j
 
         for lin in range(len(cb)):
             for col in range(len(cb[lin])):
@@ -193,7 +198,14 @@ class Game():
                     cb[lin][col].update_move() #
 
         ik, jk = self.white_king_position if turn == -1 else self.black_king_position
+        print('x')
         if not has_check(ik, jk, cb, turn):
+
+            if turn == -1:
+                self.white_check = False
+            elif turn == 1:
+                self.black_check = False
+
             self.chessboard = cb
             self.white_kills = wk
             self.black_kills = bk
@@ -205,24 +217,24 @@ class Game():
         count = 0
 
         if turn == 1:
-            ik, jk = self.black_king_position
-        elif turn == -1:
             ik, jk = self.white_king_position
+        elif turn == -1:
+            ik, jk = self.black_king_position
         ie, je = enemy_piece.piece_arrange
-
+        print(ik,jk, turn)
 
         king_map = self.chessboard[ik][jk].piece_map
 
         for i in range(len(king_map)):
             for j in range(len(king_map[i])):
-                if king_map[i][j] in [1,3] and not has_check(i, j, self.chessboard, turn):
+                if king_map[i][j] in [1,3] and not has_check(i, j, self.chessboard, -turn):
                     count += 1
 
 
         friend_pieces_arranges = []
         for i in range(len(self.chessboard)):
             for j in range(len(self.chessboard[i])):
-                if type(self.chessboard[i][j]) == Piece:
+                if type(self.chessboard[i][j]) == Piece and self.chessboard[i][j].piece_color == -turn:
                     friend_pieces_arranges.append((i,j))
 
         if enemy_piece.piece.lower() in ['r', 'q']:
@@ -233,7 +245,7 @@ class Game():
                     enemy_range = range(ie, ik, -1)
                 for i in enemy_range:
                     for k, x in friend_pieces_arranges:
-                        if self.chessboard[k][x].piece_map[i][jk] in [1, 3]:
+                        if self.chessboard[k][x].piece_map[i][jk] in [1, 3, 4]:
                             count += 1
 
             elif ik == ie:
@@ -243,25 +255,26 @@ class Game():
                     enemy_range = range(je, jk, -1)
                 for j in enemy_range:
                     for k, x in friend_pieces_arranges:
-                        if self.chessboard[k][x].piece_map[ik][j] in [1, 3]:
+                        if self.chessboard[k][x].piece_map[ik][j] in [1, 3, 4]:
                             count += 1
 
-        elif enemy_piece.piece.lower() in ['b', 'q']:
+        if enemy_piece.piece.lower() in ['b', 'q']:
             direction_i = 1 if ik > ie else -1
             direction_j = 1 if jk > je else -1
 
             if ik > ie:
-                enemy_range = range(ie, ik)
+                enemy_range = range(0, ik-ie)
             else:
-                enemy_range = range(ie, ik, -1)
+                enemy_range = range(0, ie-ik)
             for i in enemy_range:
+                print(friend_pieces_arranges)
                 for k, x in friend_pieces_arranges:
-                    if self.chessboard[k][x].piece_map[ie + i*direction_i][je + i*direction_j] in [1, 3]:
+                    if self.chessboard[k][x].piece_map[ie + i*direction_i][je + i*direction_j] in [1, 3, 4]:
                         count += 1
 
-        else:
+        if enemy_piece.piece.lower() in ['h', 'p']:
             for k, x in friend_pieces_arranges:
-                if self.chessboard[k][x].piece_map[ie][je] in [1,3]:
+                if self.chessboard[k][x].piece_map[ie][je] in [3]:
                     count += 1
 
 
@@ -337,9 +350,14 @@ def main():
 
 
         if log := game.move_piece(piece_arrange, movement, turn):
+            # os.system('clear')
             if log == 'End Game':
                 print(f'Check mate, vitória das {turns[turn]}')
                 break
+            elif log == 'Você não pode mover para essa casa, seu rei ficará em check!':
+                print(log)
+                continue
+            
             print('Movimentando...')
             print()
             turn = turn * -1
