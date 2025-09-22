@@ -4,10 +4,10 @@ def get_square_matrix(n):
     M = [[0 for _ in range(n)] for _ in range(n)]
     return M
 
-def get_initial_game(Piece: object):
-    chessboard   = get_chessboard('hook')
-    white_pieces = ['K','Q','R','B','H','P']
-    black_pieces = ['k','q','r','b','h','p']
+def get_initial_game(Piece: object, gametype = 'normalgame'):
+    chessboard   = get_chessboard(gametype)
+    white_pieces = ['K','Q','R','B','N','P']
+    black_pieces = ['k','q','r','b','n','p']
 
     for lin in range(len(chessboard)):
         for col in range(len(chessboard[lin])):
@@ -24,42 +24,23 @@ def get_chessboard(chessboard_type = 'dict'):
     if chessboard_type == 'empty':
         chessboard = [['.' for _ in range(8)] for _ in range(8)]
 
-    elif chessboard_type == 'dict':
+    elif chessboard_type == 'normalgame':
         chessboard = [
-            [{'R':1},{'H':1},{'B':1},{'Q':1},{'K':1},{'B':1},{'H':1},{'R':1}],
-
-            [{'P':1},{'P':1},{'P':1},{'P':1},{'p':1},{'P':1},{'P':1},{'P':1}],
-
-            [  '.'  ,{'p':1},  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-            [  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ,  '.'  ],
-
-            [{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1},{'p':1}],
-
-            [{'r':1},{'h':1},{'b':1},{'q':1},{'k':1},{'b':1},{'h':1},{'r':1}],
-        ]
-
-    elif chessboard_type == 'str':
-        chessboard = [
-            ['R','H','B','Q','K','B','H','R'],
-
-            ['P','P','P','P','P','P','P','P'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['.','.','.','.','.','.','.','.'],
+            ['r','n','b','q','k','b','n','r'],
 
             ['p','p','p','p','p','p','p','p'],
 
-            ['r','h','b','q','k','b','h','r'],
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['P','P','P','P','P','P','P','P'],
+
+            ['R','N','B','Q','K','B','N','R'],
         ]
 
     elif chessboard_type == 'hook':
@@ -81,29 +62,77 @@ def get_chessboard(chessboard_type = 'dict'):
             ['R','.','.','.','K','.','.','R'],
         ]
 
+    elif chessboard_type == 'shepherd':
+        chessboard = [
+            ['r','.','b','q','k','b','n','r'],
+
+            ['.','p','p','p','.','p','p','p'],
+
+            ['p','.','n','.','.','.','.','.'],
+
+            ['.','.','.','.','p','.','.','.'],
+
+            ['.','.','B','.','P','.','.','.'],
+
+            ['.','.','.','.','.','Q','.','.'],
+
+            ['P','P','P','P','.','P','P','P'],
+
+            ['R','N','B','.','K','.','N','R'],
+        ]
+
+    elif chessboard_type == 'hook':
+        chessboard = [
+            ['r','.','.','.','k','.','.','r'],
+
+            ['P','P','P','P','P','P','P','P'],
+
+            ['R','.','.','.','K','.','.','R'],
+        ]
+
+    elif chessboard_type == 'shepherd':
+        chessboard = [
+            ['r','.','b','q','k','b','n','r'],
+
+            ['.','p','p','p','.','p','p','p'],
+
+            ['p','.','n','.','.','.','.','.'],
+
+            ['.','.','.','.','p','.','.','.'],
+
+            ['.','.','B','.','P','.','.','.'],
+
+            ['.','.','.','.','.','Q','.','.'],
+
+            ['P','P','P','P','.','P','P','P'],
+
+            ['R','N','B','.','K','.','N','R'],
+        ]
+
     elif chessboard_type == 'tower':
         chessboard = [
-            ['R','R','R','R','R','R','R','R'],
-
-            ['R','R','R','R','R','R','R','R'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['.','.','.','.','.','.','.','.'],
-
             ['r','r','r','r','r','r','r','r'],
 
             ['r','r','r','r','r','r','r','r'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['R','R','R','R','R','R','R','R'],
+
+            ['R','R','R','R','R','R','R','R'],
         ]
 
     return chessboard
 
 def show_chessboard(chessboard):
     count = 0
+    i_axis = 8
     for line in chessboard:
         lin = []
         for e in line:
@@ -113,19 +142,24 @@ def show_chessboard(chessboard):
             else:
                 lin.append(e)
 
-        print(' '.join(lin))
-    print(count)
+        print(f'{i_axis}  '+' '.join(lin))
+        i_axis -= 1
+    print()
+    print('   A B C D E F G H')
+    print()
 
 def show_pieces_map(chessboard):
     for line in chessboard:
-        for e in line:
-
-            piece = e.piece
-            print(f'\n{'':=^30}\n')
-            print(f'{piece:=^30}\n')
+        for piece in line:
+            _ = ''
+            piece_name = piece.piece
+            print()
+            print(f'{"":=^30 }')
+            print()
+            print(f'{piece_name:=^30}\n')
 
             lin = []
-            for value in e.piece_map:
+            for value in piece.piece_map:
                 lin.append(str(value))
             
             print(' '.join(lin))
@@ -174,22 +208,34 @@ def deepcopy(M):
 
     return matrix
 
+def deepcopy_list(l):
+
+    new_list = []
+
+    for e in l:
+        new_list.append(e)
+    
+    return new_list
+
 def affine_function(a, x, b):
     y = a*x + b
 
     return x, y
 
 def has_check(i, j, chessboard, turn):
+        
         for l in range(len(chessboard)):
             for c in range(len(chessboard)):
                 if type(chessboard[l][c]) != str:
                     if chessboard[l][c].piece_color != turn:
 
                         enimy_piece_map = chessboard[l][c].piece_map
-                        if enimy_piece_map[i][j] in [1,3]:
+                        if enimy_piece_map[i][j] in [3,7] or chessboard[l][c].piece.lower() != 'p' and enimy_piece_map[i][j] == 1:
+                            print(enimy_piece_map[i][j])
+                            print()
                             return True
 
-                        break
+                        # break
         
         return False
 

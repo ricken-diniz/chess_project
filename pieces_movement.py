@@ -1,41 +1,38 @@
-from utils import affine_function, get_square_matrix, deepcopy, show_chessboard
+from utils import affine_function, get_square_matrix, deepcopy_list, has_check
 
 class Piece():
 
-    def __init__(self, i, j, chessboard, piece):
-        white_pieces = ['K','Q','R','B','H','P']
-        black_pieces = ['k','q','r','b','h','p']
+    def __init__(self, i, j, chessboard, piece, piece_map = None):
+        white_pieces = ['K','Q','R','B','N','P']
+        black_pieces = ['k','q','r','b','n','p']
 
-        self.piece_ispinned = False
         self.piece_arrange  = (i, j)
-        self.piece_color    = 1 if piece in white_pieces else -1 if piece in black_pieces else Exception
+        self.piece_color    = -1 if piece in white_pieces else 1 if piece in black_pieces else Exception
         self.chessboard     = chessboard
         self.piece_map      = get_square_matrix(8)
         self.piece          = piece
         self.defs = {
             'r': self.spawn_pointers_rock,
-            'h': self.spawn_pointers_horse,
+            'n': self.spawn_pointers_horse,
             'b': self.spawn_pointers_bishop,
             'q': self.spawn_pointers_queen,
             'k': self.spawn_pointers_king,
             'p': self.spawn_pointers_pawn
         }
-        
-        self.defs[self.piece.lower()]()
-        self.piece_map[i][j] = 2
+
+        if not piece_map is None:
+            self.piece_map = deepcopy_list(piece_map)
+        else:
+            self.defs[self.piece.lower()]()
+            self.piece_map[i][j] = 2
 
     def verify_has_piece(self, i, j, ispawn = False):
-        white_pieces = ['K','Q','R','B','H','P']
-        black_pieces = ['k','q','r','b','h','p']
+        white_pieces = ['K','Q','R','B','N','P']
+        black_pieces = ['k','q','r','b','n','p']
         piece        = None
 
         if type(self.chessboard[i][j]) == Piece:
             piece = self.chessboard[i][j].piece
-
-        elif type(self.chessboard[i][j]) == dict:
-            for k in self.chessboard[i][j].keys():
-                if k in white_pieces or k in black_pieces:
-                    piece = k
 
         elif type(self.chessboard[i][j]) == str and self.chessboard[i][j] in white_pieces or self.chessboard[i][j] in black_pieces:
             piece = self.chessboard[i][j]
@@ -43,13 +40,15 @@ class Piece():
 
         if piece is not None:
 
-            if piece in white_pieces and self.piece_color == 1 or piece in black_pieces and self.piece_color == -1:
-                return True
+            if piece in white_pieces and self.piece_color == -1 or piece in black_pieces and self.piece_color == 1:
+                if not ispawn:
+                    self.piece_map[i][j] = 5
+                return 'Not'
             
-            elif piece in white_pieces and self.piece_color == -1 or piece in black_pieces and self.piece_color == 1:
+            elif piece in white_pieces and self.piece_color == 1 or piece in black_pieces and self.piece_color == -1:
                 if not ispawn:
                     self.piece_map[i][j] = 3
-                return True
+                return 'Yes'
         
 
         return False
@@ -82,6 +81,9 @@ class Piece():
         self.defs[self.piece.lower()]()
         self.piece_map[i][j] = 2
 
+    def clone(self):
+        i, j = self.piece_arrange
+        return Piece(i, j, self.chessboard, self.piece, self.piece_map)
 
 
     def spawn_pointers_bishop(self):
@@ -100,19 +102,33 @@ class Piece():
         sdc = secondary_diagonal_coefficient
 
         for _ in range(less - 1, -1, -1):
-            x, y = affine_function(1, _, pdc)
+            x, y        = affine_function(1, _, pdc)
             lin, col    = (x, y)     if j > i else     (y, x)
             
-            if self.verify_has_piece(lin, col):            
+            if log := self.verify_has_piece(lin, col):   
+                if log == 'Yes':
+                    if lin > 0 and col > 0:
+                        if self.chessboard[lin][col].piece.lower() == 'k':
+                            self.piece_map[lin-1][col-1] = 7
+                        else:
+                            self.piece_map[lin-1][col-1] = 5
+
                 break
 
             M[lin][col] = 1
 
         for _ in range(less + 1, len(M) - pdc):
-            x, y = affine_function(1, _, pdc)
+            x, y        = affine_function(1, _, pdc)
             lin, col    = (x, y)     if j > i else     (y, x)
             
-            if self.verify_has_piece(lin, col):            
+            if log := self.verify_has_piece(lin, col):     
+                if log == 'Yes':
+                    if lin < 7 and col < 7:
+                        if self.chessboard[lin][col].piece.lower() == 'k':
+                            self.piece_map[lin+1][col+1] = 7         
+                        else:
+                            self.piece_map[lin+1][col+1] = 5         
+
                 break
 
             M[lin][col] = 1
@@ -123,7 +139,14 @@ class Piece():
                 x, y        = affine_function(-1, _, l + sdc)
                 lin, col    = (x, y)
 
-                if self.verify_has_piece(lin, col):            
+                if log := self.verify_has_piece(lin, col):
+                    if log == 'Yes':
+                        if lin > 0 and col < 7:
+                            if self.chessboard[lin][col].piece.lower() == 'k':
+                                self.piece_map[lin-1][col+1] = 7         
+                            else:
+                                self.piece_map[lin-1][col+1] = 5         
+
                     break
 
                 M[lin][col] = 1
@@ -132,7 +155,14 @@ class Piece():
                 x, y        = affine_function(-1, _, l + sdc)
                 lin, col    = (x, y)
 
-                if self.verify_has_piece(lin, col):            
+                if log := self.verify_has_piece(lin, col): 
+                    if log == 'Yes':
+                        if lin < 7 and col > 0:
+                            if self.chessboard[lin][col].piece.lower() == 'k':
+                                self.piece_map[lin+1][col-1] = 7             
+                            else:
+                                self.piece_map[lin+1][col-1] = 5             
+
                     break
 
                 M[lin][col] = 1
@@ -142,7 +172,14 @@ class Piece():
                 x, y        = affine_function(-1, _, l + sdc)
                 lin, col    = (x, y)
 
-                if self.verify_has_piece(lin, col):            
+                if log := self.verify_has_piece(lin, col):
+                    if log == 'Yes':
+                        if lin > 0 and col < 7:
+                            if self.chessboard[lin][col].piece.lower() == 'k':
+                                self.piece_map[lin-1][col+1] = 7               
+                            else:
+                                self.piece_map[lin-1][col+1] = 5               
+
                     break
 
                 M[lin][col] = 1
@@ -151,7 +188,14 @@ class Piece():
                 x, y        = affine_function(-1, _, l + sdc)
                 lin, col    = (x, y)
 
-                if self.verify_has_piece(lin, col): 
+                if log := self.verify_has_piece(lin, col): 
+                    if log == 'Yes':
+                        if lin < 7 and col > 0:
+                            if self.chessboard[lin][col].piece.lower() == 'k':
+                                self.piece_map[lin+1][col-1] = 7  
+                            else:
+                                self.piece_map[lin+1][col-1] = 5  
+
                     break
 
                 M[lin][col] = 1
@@ -162,28 +206,56 @@ class Piece():
 
         for _ in range(i-1, -1,-1):
 
-            if self.verify_has_piece(_, j):            
+            if log := self.verify_has_piece(_, j):
+                if log == 'Yes':
+                    if _ > 0:
+                        if self.chessboard[_][j].piece.lower() == 'k':
+                            self.piece_map[_ - 1][j] = 7              
+                        else:
+                            self.piece_map[_ - 1][j] = 5            
+
                 break
             
             M[_][j] = 1
 
         for _ in range(i+1, len(M)):
 
-            if self.verify_has_piece(_, j):            
+            if log := self.verify_has_piece(_, j):  
+                if log == 'Yes':
+                    if _ < 7:
+                        if self.chessboard[_][j].piece.lower() == 'k':
+                            self.piece_map[_ + 1][j] = 7           
+                        else:
+                            self.piece_map[_ + 1][j] = 5          
+
                 break
             
             M[_][j] = 1
 
         for _ in range(j-1, -1,-1):
 
-            if self.verify_has_piece(i, _):            
+            if log := self.verify_has_piece(i, _): 
+                if log == 'Yes':
+                    if _ > 0:
+                        if self.chessboard[i][_].piece.lower() == 'k':
+                            self.piece_map[i][_ - 1] = 7            
+                        else:
+                            self.piece_map[i][_ - 1] = 5            
+
                 break
 
             M[i][_] = 1
         
         for _ in range(j+1, len(M)):
 
-            if self.verify_has_piece(i, _):            
+            if log := self.verify_has_piece(i, _):   
+                if log == 'Yes':
+                    if _ < 7:
+                        if self.chessboard[i][_].piece.lower() == 'k':
+                            self.piece_map[i][_ + 1] = 7           
+                        else:
+                            self.piece_map[i][_ + 1] = 5           
+
                 break 
 
             M[i][_] = 1
@@ -238,6 +310,9 @@ class Piece():
             i,j = t
             if i >= 0 and j >= 0 and i < l and j < l:
 
+                if has_check(i, j, self.chessboard, self.piece_color):
+                    continue
+
                 if self.verify_has_piece(i, j):            
                     continue
 
@@ -263,9 +338,11 @@ class Piece():
             
             if _ != 2:
                 if j > 0:
+                    self.piece_map[i + (_*color)][j-1] = 5
                     self.verify_has_piece(i + (_*color), j-1)
                     
                 if j < len(M) - 1:
+                    self.piece_map[i + (_*color)][j+1] = 5
                     self.verify_has_piece(i + (_*color), j+1)
 
             if self.verify_has_piece(i + (_*color), j, True):
