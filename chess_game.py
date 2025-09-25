@@ -21,8 +21,11 @@ class Game():
             for j in range(len(self.chessboard[i])):
                 if type(self.chessboard[i][j]) == Piece and self.chessboard[i][j].piece.lower() == 'k':
                     if self.chessboard[i][j].piece_color == 1:
+                        print('SALVANDO POSIÇÃO DO REI')
+                        print(i,j)
                         self.black_king_position = (i,j)
                         if (i,j) == (0,4):
+                            print('.')
                             self.chessboard[i][j].piece_map[0][6] = 4
                             self.chessboard[i][j].piece_map[0][2] = 4
                     elif self.chessboard[i][j].piece_color == -1:
@@ -156,14 +159,14 @@ class Game():
         elif piece == 'R' and (i, j) == (7, 7):
             self.white_right_hook = False
 
-        if not(iwk,jwk) == (-1,-1):
+        if not(iwk,jwk) == (-1,-1) and (iwk,jwk) == (7,4):
             if self.white_left_hook:
                 self.chessboard[iwk][jwk].piece_map[7][2] = 4
 
             if self.white_right_hook:
                 self.chessboard[iwk][jwk].piece_map[7][6] = 4
 
-        if not(ibk,jbk) == (-1,-1):
+        if not(ibk,jbk) == (-1,-1) and (ibk,jbk) == (0,4):
             if self.black_left_hook:
                 self.chessboard[ibk][jbk].piece_map[0][2] = 4
                 
@@ -330,16 +333,23 @@ def main():
     os.mkfifo('/tmp/fifor')
     os.system('clear')
 
+    gamemode = input('(L)ocal ou (M)ultplayer?')
+
     turns = [None, 'pretas', 'brancas']
     turn = -1 
     game = Game()
     print('Esperando o oponente conectar...')
-    fr = open('/tmp/fifor')
+    fr = open('/tmp/fifor') if gamemode == 'M' else None
     with open('/tmp/fifow', 'w') as fw:
         fw.write(cleaner)
         fw.write('Partida iniciada!')
         fw.flush()
-        outputfunction = [None, fw.write, print]
+        if gamemode == 'L':
+            outputfunction = [None, print, print]
+        else:
+            outputfunction = [None, fw.write, print]
+
+
         while True:
             for k in [1,-1]:
                 output = alert_check(game)
@@ -363,8 +373,12 @@ def main():
             if turn == -1:
                 piece_arrange = input('Selecione sua peça: ')
             elif turn == 1:
-                fw.write('\nSelecione sua peça: \n')
-                piece_arrange = fr.readline()
+                if gamemode == 'M':
+                    fw.write('\nSelecione sua peça: \n')
+                    fw.flush
+                    piece_arrange = fr.readline()
+                else:
+                    piece_arrange = input('Selecione sua peça: ')
 
             if 'desisto' in piece_arrange.lower():
                 outputfunction[turn](f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[-turn]}\n')
@@ -429,11 +443,13 @@ def main():
             
             if turn == -1:
                 movement = input('Selecione o destino (ou digite C para escolher outra peça): ')
-                fw.flush()
             elif turn == 1:
-                fw.write('\nSelecione o destino (ou digite C para escolher outra peça): \n')
-                fw.flush()
-                movement = fr.readline()
+                if gamemode == 'M   ':
+                    fw.write('\nSelecione o destino (ou digite C para escolher outra peça): \n')
+                    fw.flush
+                    movement = fr.readline()
+                else:
+                    movement = input('Selecione o destino (ou digite C para escolher outra peça): ')
 
             if movement.lower() == 'c':
                 outputfunction[turn](cleaner)
@@ -461,6 +477,12 @@ def main():
                         outputfunction[k](output)
                         outputfunction[k]('\nBrancas: ' + " ".join(game.white_kills) + '\n')
                         outputfunction[k](f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[turn]}\n')
+                        try:
+                            m,n = game.black_king_position
+                            outputfunction[k](show_movies(game.chessboard,game.chessboard[m][n].piece_map))
+                        except Exception as e:
+                            print('No position')
+                            print(e)
                         fw.flush()
                     break
 
