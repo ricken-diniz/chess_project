@@ -173,43 +173,6 @@ def stream_crazy_game(multiplayer,game,fw=None,fr=None):
         inputmessage = '\nSelecione sua peça: '
         response = input_message(inputmessage,multiplayer,fw,fr,turn)
 
-        if response in captured_pieces[turn]:
-            inputmessage = '\nSelecione a casa (ou digite C para cancelar): '
-            arrange = input_message(inputmessage,multiplayer,fw,fr,turn)
-
-            if arrange.lower() == 'c':
-                output_message(cleaner,multiplayer,fw)
-                continue
-
-            elif (arrange := get_arrange(arrange)) != False:
-                i, j = arrange
-                piece_arrange = arrange
-                
-            else:
-                output = cleaner + 'Selecione uma coordenada válida!'
-                output_message(output,multiplayer,fw)
-                continue
-
-            if not (log := game.insert_piece(response,arrange,turn)) is False:
-
-                if log == 'End Game':
-                    output = cleaner
-                    output += '\nPretas: ' + " ".join(game.black_kills) + '\n'
-                    output += show_chessboard(game.chessboard)
-                    output += '\nBrancas: ' + " ".join(game.white_kills) + '\n'
-                    output += f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[turn]}'
-                    output_message(output,multiplayer,fw)
-                    break
-
-                output = cleaner + 'Colocando peça...'
-                output_message(output,multiplayer,fw)
-                turn = turn * -1
-                continue
-            else:
-                output = cleaner + 'Tente novamente'
-                output_message(output,multiplayer,fw)
-                continue
-
         if 'desisto' in response.lower():
             output = f'\n\n\033[95mDesistência das {turns[turn]}\033[0m, vitória das {turns[-turn]}'
             output_message(output,multiplayer,fw)
@@ -234,9 +197,43 @@ def stream_crazy_game(multiplayer,game,fw=None,fr=None):
             piece_arrange = arrange
             
         else:
-            output = cleaner + 'Selecione uma coordenada válida!'
-            output_message(output,multiplayer,fw)
-            continue
+
+            if response in captured_pieces[turn]:
+                inputmessage = '\nSelecione a casa (ou digite C para cancelar): '
+                arrange = input_message(inputmessage,multiplayer,fw,fr,turn)
+
+                if arrange.lower() == 'c':
+                    output_message(cleaner,multiplayer,fw)
+                    continue
+
+                elif (arrange := get_arrange(arrange)) != False:
+                    i, j = arrange
+                    piece_arrange = arrange
+                    
+                else:
+                    output = cleaner + 'Selecione uma coordenada válida!'
+                    output_message(output,multiplayer,fw)
+                    continue
+
+                if not (log := game.insert_piece(response,arrange,turn)) is False:
+
+                    if log == 'End Game':
+                        output = cleaner
+                        output += '\nPretas: ' + " ".join(game.black_kills) + '\n'
+                        output += show_chessboard(game.chessboard)
+                        output += '\nBrancas: ' + " ".join(game.white_kills) + '\n'
+                        output += f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[turn]}'
+                        output_message(output,multiplayer,fw)
+                        break
+
+                    output = cleaner + 'Colocando peça...'
+                    output_message(output,multiplayer,fw)
+                    turn = turn * -1
+                    continue
+                else:
+                    output = cleaner + 'Tente novamente'
+                    output_message(output,multiplayer,fw)
+                    continue
 
         if game.chessboard[i][j] == '.':
             output = cleaner + 'Selecione uma peça, você selecionou um espaço vazio...'
