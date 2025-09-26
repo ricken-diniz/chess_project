@@ -14,7 +14,8 @@ def main():
     Para jogar, você informa apenas coordenadas, exemplo "A8", "g7".
     Primeiro você seleciona uma peça, depois você orienta qual casa quer ir.
     Também há mensagens de controle como "desisto" e "empate" para quando um
-    oponente quiser desistir ou sugerir um empate.
+    oponente quiser desistir ou sugerir um empate. Aparecerá mensagens 
+    informando as peças capturadas por cada time e mensagens de logs!
 
     Se for jogar localmente, faça sua jogada e passe a vez, aparecerá uma
     mensagem instruindo de quem é a vez.
@@ -55,30 +56,40 @@ def main():
         else:
             print('Digite uma resposta válida (`exit` para sair).')
 
-    os.system('clear')
     while True:
+        os.system('clear')
         gamemod = input('Qual modo de jogo?\n1. Normal Game\n2. Atomic Chess\n3. Crazy Chess\n4. Duck Chess\n\nR: ')
-        if gamemod in ['1','2','3','4']:
-            break
+        if gamemod == '1':
+            print('\nModo de jogo padrão com as regras tradicionais do xadrez.\n')
+            confirm = input('Confirmar? (Yes/No): ')
+            if confirm.lower() in 'yes':
+                game = Chess()
+                stream_game = stream_normal_game
+                break
+        elif gamemod == '2':
+            print('\nXadrez atômico, quando uma peça for capturada, tudo ao redor vai embora, exceto o rei aliado.\nNote que você pode eliminar o rei inimigo, e isso será cheque mate! Uma dica? \nO cavalo é melhor do que parece...\n')
+            confirm = input('Confirmar? (Yes/No): ')
+            if confirm.lower() in 'yes':
+                game = AtomicChess()
+                stream_game = stream_normal_game
+                break
+        elif gamemod == '3':
+            print('\nXadrez maluco, você pode realocar uma peça capturada para o seu exército, ao invés de fazer\num movimento padrão de jogo. Para isso, basta digitar a letra da peça capturada em sua jogada. \nNote que há diferenciação de maiúsculas e minúsculas, exemplo: "p" é um peão preto.\n')
+            confirm = input('Confirmar? (Yes/No): ')
+            if confirm.lower() in 'yes':
+                game = CrazyChess()
+                stream_game = stream_crazy_game
+                break
+        elif gamemod == '4':
+            return
+            # game = Game()
+            # stream_game = stream_duck_game
         elif gamemod == 'exit':
             print('\nAté mais!')
             return
         else:
             print('Digite uma resposta válida (`exit` para sair).')
 
-    if gamemod == '1':
-        game = Chess()
-        stream_game = stream_normal_game
-    elif gamemod == '2':
-        game = AtomicChess()
-        stream_game = stream_normal_game
-    elif gamemod == '3':
-        game = CrazyChess()
-        stream_game = stream_crazy_game
-    elif gamemod == '4':
-        return
-        # game = Game()
-        # stream_game = stream_duck_game
 
     if connection == 'M':
         if os.path.exists('/tmp/fifow'):
