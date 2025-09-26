@@ -198,7 +198,7 @@ def stream_crazy_game(multiplayer,game,fw=None,fr=None):
             
         else:
 
-            if response in captured_pieces[turn]:
+            if response[0] in captured_pieces[turn]:
                 inputmessage = '\nSelecione a casa (ou digite C para cancelar): '
                 arrange = input_message(inputmessage,multiplayer,fw,fr,turn)
 
