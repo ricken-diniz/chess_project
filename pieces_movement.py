@@ -12,7 +12,7 @@ class Piece():
         self.piece_map      = get_square_matrix(8)
         self.piece          = piece
         self.defs = {
-            'r': self.spawn_pointers_rock,
+            'r': self.spawn_pointers_rook,
             'n': self.spawn_pointers_horse,
             'b': self.spawn_pointers_bishop,
             'q': self.spawn_pointers_queen,
@@ -161,7 +161,7 @@ class Piece():
                 break
             M[lin][col] = 1
 
-    def spawn_pointers_rock(self):
+    def spawn_pointers_rook(self):
         i, j = self.piece_arrange
         M = self.piece_map
 
@@ -210,7 +210,7 @@ class Piece():
             M[i][_] = 1
 
     def spawn_pointers_queen(self):
-        self.spawn_pointers_rock()
+        self.spawn_pointers_rook()
         self.spawn_pointers_bishop()
         self.piece = 'Q' if self.piece_color == -1 else 'q'
 
