@@ -1,0 +1,102 @@
+import os
+from gamemods.chess import Chess
+from gamemods.atomic_chess import AtomicChess
+from gamemods.crazy_chess import CrazyChess
+from streams import stream_normal_game, stream_crazy_game
+
+def main():
+    os.system('clear')
+    initial_alert = '''
+    XADREZ
+
+    Como jogar?
+
+    Para jogar, você informa apenas coordenadas, exemplo "A8", "g7".
+    Primeiro você seleciona uma peça, depois você orienta qual casa quer ir.
+    Também há mensagens de controle como "desisto" e "empate" para quando um
+    oponente quiser desistir ou sugerir um empate.
+
+    Se for jogar localmente, faça sua jogada e passe a vez, aparecerá uma
+    mensagem instruindo de quem é a vez.
+
+    Se for jogar no Multiplayer, o outro jogador deve conectar-se a mesma
+    máquina (ou VM), mas pode estar em outro usuário, ele deverá ir ao
+    diretório temporário com o comando:
+
+    `\033[94mcd /tmp\033[0m`
+
+    ... e abrir 2 arquivos,
+    *fifow* para ver em tempo real as atualizações do tabuleiro, aconselho
+    usar tmux para dividir a tela e deixar mais espaço para esta sessão,
+    fora isso, basta executar o comando:
+
+    `\033[94mcat fifow\033[0m`
+    
+    e o arquivo *fifor*, para dar os comandos de jogadas em tempo real, para
+    este, precisa de pouco espaço de tela, basta o comando:
+
+    `\033[94mtee -a fifor\033[0m`
+
+    ALERTA: Se for jogar multiplayer, por questões de permissões, é preferível
+    que se use o prefixo \033[94msudo\033[0m, para conceder permissões de super-
+    usuário e evitar problemas de permissões, caso contrário, talvez seja neces-
+    sário configurar manualmente as permissões de criação dos arquivos.
+    '''
+
+    print(initial_alert)
+
+    while True:
+        connection = input('(L)ocal ou (M)ultiplayer? ')
+        if connection.lower() in ['l','m']:
+            break
+        elif connection == 'exit':
+            print('\nAté mais!')
+            return
+        else:
+            print('Digite uma resposta válida (`exit` para sair).')
+
+    os.system('clear')
+    while True:
+        gamemod = input('Qual modo de jogo?\n1. Normal Game\n2. Atomic Chess\n3. Crazy Chess\n4. Duck Chess\n\nR: ')
+        if gamemod in ['1','2','3','4']:
+            break
+        elif gamemod == 'exit':
+            print('\nAté mais!')
+            return
+        else:
+            print('Digite uma resposta válida (`exit` para sair).')
+
+    if gamemod == '1':
+        game = Chess()
+        stream_game = stream_normal_game
+    elif gamemod == '2':
+        game = AtomicChess()
+        stream_game = stream_normal_game
+    elif gamemod == '3':
+        game = CrazyChess()
+        stream_game = stream_crazy_game
+    elif gamemod == '4':
+        return
+        # game = Game()
+        # stream_game = stream_duck_game
+
+    if connection == 'M':
+        if os.path.exists('/tmp/fifow'):
+            os.remove('/tmp/fifow')
+        if os.path.exists('/tmp/fifor'):
+            os.remove('/tmp/fifor')
+        os.mkfifo('/tmp/fifow')
+        os.mkfifo('/tmp/fifor')
+        os.system('clear')
+        print('Esperando o oponente conectar...')
+        fr = open('/tmp/fifor')
+        with open('/tmp/fifow', 'w') as fw:
+            stream_game(True,game,fw,fr)
+    else:
+        stream_game(False,game,None,None)
+
+        
+
+
+if __name__ == '__main__':
+    main()
