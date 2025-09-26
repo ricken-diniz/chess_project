@@ -1,10 +1,8 @@
-
-
 def get_square_matrix(n):
     M = [[0 for _ in range(n)] for _ in range(n)]
     return M
 
-def get_initial_game(Piece: object, gametype = 'defenseandattack'):
+def get_initial_game(Piece: object, gametype):
     chessboard   = get_chessboard(gametype)
     white_pieces = ['K','Q','R','B','N','P']
     black_pieces = ['k','q','r','b','n','p']
@@ -47,7 +45,7 @@ def get_chessboard(chessboard_type = 'dict'):
         chessboard = [
             ['r','.','.','.','k','.','.','r'],
 
-            ['p','p','p','p','p','p','p','p'],
+            ['p','p','.','p','p','p','p','p'],
 
             ['.','.','.','.','.','.','.','.'],
 
@@ -55,9 +53,9 @@ def get_chessboard(chessboard_type = 'dict'):
 
             ['.','.','.','.','.','.','.','.'],
 
-            ['.','.','.','.','.','.','.','.'],
+            ['.','.','.','n','.','.','.','.'],
 
-            ['P','P','P','P','P','P','P','P'],
+            ['P','q','R','P','P','P','P','P'],
 
             ['R','.','.','.','K','.','.','R'],
         ]
@@ -116,7 +114,7 @@ def get_chessboard(chessboard_type = 'dict'):
 
             ['.','.','.','.','.','.','P','.'],
 
-            ['.','.','.','.','B','.','.','.'],
+            ['K','.','.','.','B','.','.','.'],
         ]
     elif chessboard_type == 'continuouscheck':
         chessboard = [
@@ -219,25 +217,29 @@ def show_chessboard(chessboard):
     for line in chessboard:
         lin = []
         controller = -controller
+        empty_space = '       '
+        empty_line = '\n  ' + 4 * (r[controller] + empty_space + r[-controller] + empty_space) + '\033[0m'
+        output += empty_line
 
         for e in line:
 
             if type(e) != str:
                 if e.piece_color == -1:
-                    e = f'{r[controller]}\033[38;5;88m {e.piece}\033[0m'
+                    e = f'{r[controller]}\033[38;5;88m   {e.piece}   \033[0m'
                 else:
-                    e = f'{r[controller]}\033[38;5;0m {e.piece}\033[0m'
-
+                    e = f'{r[controller]}\033[38;5;0m   {e.piece}   \033[0m'
                 lin.append(e)
+
             else:
-                lin.append(f'{r[controller]}  \033[0m')
+                lin.append(f'{r[controller]}       \033[0m')
             
             controller = -controller
 
-        output += f'\n{i_axis}  '+''.join(lin)
+        output += f'\n{i_axis} '+''.join(lin)
+        output += empty_line
         i_axis -= 1
 
-    output += '\n\n   A B C D E F G H' + '\n'
+    output += '\n     A      B      C      D      E      F      G      H\n'
 
     return output
 
@@ -265,30 +267,33 @@ def show_movies(chessboard, piece_map):
     for i in range(len(chessboard)):
         lin = []
         controller = -controller
+        empty_space = '       '
+        empty_line = '\n  ' + 4 * (r[controller] + empty_space + r[-controller] + empty_space) + '\033[0m'
+        output += empty_line
 
         for j in range(len(chessboard[i])):
             if type(chessboard[i][j]) != str:
                 e = chessboard[i][j]
                 if chessboard[i][j].piece_color == -1:
-                    e = f'{r[controller]}\033[38;5;88m {e.piece}\033[0m'
+                    e = f'{r[controller]}\033[38;5;88m   {e.piece}   \033[0m'
                 else:
-                    e = f'{r[controller]}\033[38;5;0m {e.piece}\033[0m'
+                    e = f'{r[controller]}\033[38;5;0m   {e.piece}   \033[0m'
                 
             else:
-                e = f'{r[controller]}  \033[0m'
+                e = f'{r[controller]}       \033[0m'
             
             if piece_map[i][j] == 1:
-                lin.append(f'{r[controller]}\033[94m *\033[0m')
+                lin.append(f'{r[controller]}\033[94m   *   \033[0m')
                 
             elif piece_map[i][j] == 2:
-                e = f'{r[controller]}\033[38m {chessboard[i][j].piece}\033[0m'
+                e = f'{r[controller]}\033[38m   {chessboard[i][j].piece}   \033[0m'
                 lin.append(e)
                 
             elif piece_map[i][j] in [3,4]:
                 if type(chessboard[i][j]) != str:
-                    e = f'{r[controller]}\033[95m {chessboard[i][j].piece}\033[0m'
+                    e = f'{r[controller]}\033[95m   {chessboard[i][j].piece}   \033[0m'
                 else:
-                    e = f'{r[controller]}\033[95m x\033[0m'
+                    e = f'{r[controller]}\033[95m   x   \033[0m'
                 lin.append(e)
                 
             else:
@@ -297,10 +302,11 @@ def show_movies(chessboard, piece_map):
                 
             controller = -controller
         
-        output += f'\n{i_axis}  '+''.join(lin)
+        output += f'\n{i_axis} '+''.join(lin)
+        output += empty_line
         i_axis -= 1
         
-    output += '\n\n   A B C D E F G H\n'
+    output += '\n\n     A      B      C      D      E      F      G      H\n'
     return output
 
 def deepcopy(M):
