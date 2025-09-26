@@ -9,7 +9,6 @@ class FeaturesTests():
         chessboard = get_initial_game(Piece)
 
         show_chessboard(chessboard)
-        # show_pieces_map(chessboard)
 
     def validate_has_check(self):
         chessboard = get_chessboard('empty')
@@ -94,7 +93,6 @@ class FeaturesTests():
 
 def main():
     
-    M = []
     points = [
         (6,4,1),
         (5,3,1),

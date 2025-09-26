@@ -212,7 +212,6 @@ def show_chessboard(chessboard):
     r = [None, '\033[48;5;250m', '\033[48;5;65m']
     controller = 1
     output = ''
-    count = 0
     i_axis = 8
     for line in chessboard:
         lin = []
@@ -243,22 +242,6 @@ def show_chessboard(chessboard):
 
     return output
 
-def show_pieces_map(chessboard):
-    for line in chessboard:
-        for piece in line:
-            _ = ''
-            piece_name = piece.piece
-            print()
-            print(f'{"":=^30 }')
-            print()
-            print(f'{piece_name:=^30}\n')
-
-            lin = []
-            for value in piece.piece_map:
-                lin.append(str(value))
-            
-            print(' '.join(lin))
-
 def show_movies(chessboard, piece_map):
     r = [None, '\033[48;5;250m', '\033[48;5;65m']
     controller = 1
@@ -274,7 +257,7 @@ def show_movies(chessboard, piece_map):
         for j in range(len(chessboard[i])):
             if type(chessboard[i][j]) != str:
                 e = chessboard[i][j]
-                if chessboard[i][j].piece_color == -1:
+                if e.piece_color == -1:
                     e = f'{r[controller]}\033[38;5;88m   {e.piece}   \033[0m'
                 else:
                     e = f'{r[controller]}\033[38;5;0m   {e.piece}   \033[0m'
@@ -338,9 +321,7 @@ def has_check(i, j, chessboard, turn):
         
         for l in range(len(chessboard)):
             for c in range(len(chessboard)):
-                if type(chessboard[l][c]) != str:
-                    if chessboard[l][c].piece_color != turn:
-
+                if type(chessboard[l][c]) != str and chessboard[l][c].piece_color != turn:
                         enimy_piece_map = chessboard[l][c].piece_map
                         if enimy_piece_map[i][j] in [3,7] or chessboard[l][c].piece.lower() != 'p' and enimy_piece_map[i][j] == 1:
                             return True

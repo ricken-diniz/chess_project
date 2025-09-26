@@ -91,7 +91,7 @@ def main():
             print('Digite uma resposta válida (`exit` para sair).')
 
 
-    if connection == 'M':
+    if connection.lower() == 'm':
         if os.path.exists('/tmp/fifow'):
             os.remove('/tmp/fifow')
         if os.path.exists('/tmp/fifor'):
