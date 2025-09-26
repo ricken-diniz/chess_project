@@ -1,10 +1,9 @@
-from pieces_movement import *
-from utils import *
-import os
+from pieces_movement import Piece
+from utils import get_initial_game,deepcopy,deepcopy_list,has_check,get_square_matrix
 
-class Game():
-    def __init__(self):
-        self.chessboard = get_initial_game(Piece)
+class Chess():
+    def __init__(self, gamemod = 'normalgame'):
+        self.chessboard = get_initial_game(Piece, gamemod)
         self.white_kills = []
         self.black_kills = []
         self.white_left_hook = True
@@ -21,11 +20,8 @@ class Game():
             for j in range(len(self.chessboard[i])):
                 if type(self.chessboard[i][j]) == Piece and self.chessboard[i][j].piece.lower() == 'k':
                     if self.chessboard[i][j].piece_color == 1:
-                        print('SALVANDO POSIÇÃO DO REI')
-                        print(i,j)
                         self.black_king_position = (i,j)
                         if (i,j) == (0,4):
-                            print('.')
                             self.chessboard[i][j].piece_map[0][6] = 4
                             self.chessboard[i][j].piece_map[0][2] = 4
                     elif self.chessboard[i][j].piece_color == -1:
@@ -41,31 +37,29 @@ class Game():
         if type(self.chessboard[i][j]) == Piece:
             
             if self.chessboard[i][j].piece_map[l][c] in [1,3,4]:
-                color = self.chessboard[i][j].piece_color
                 piece = self.chessboard[i][j].piece
 
                 if self.chessboard[i][j].piece_map[l][c] == 4 and piece.lower() == 'k':
-                    if not self.hook(l, c, color):
+                    if not self.hook(l, c, turn):
                         return False
                     
                 if not self.validate_move(i, j, l, c, turn):
                     return 'Você não pode mover para essa casa, seu rei ficará em xeque!'
                 
-                self.check_hook(piece, i, j, color) 
+                self.check_hook(piece, i, j, turn) 
 
-                if piece.lower() == 'p' and (l-i)*color == 2:
+                if piece.lower() == 'p' and (l-i)*turn == 2:
                     if c > 0:
                         left_position = self.chessboard[l][c-1] 
-                        if type(left_position) == Piece and left_position.piece.lower() == 'p' and left_position.piece_color != color:
-                            left_position.piece_map[l-1*color][c] = 4 
+                        if type(left_position) == Piece and left_position.piece.lower() == 'p' and left_position.piece_color != turn:
+                            left_position.piece_map[l-1*turn][c] = 4 
 
                     if c < len(self.chessboard) - 1:
                         right_position = self.chessboard[l][c+1] 
-                        if type(right_position) == Piece and right_position.piece.lower() == 'p' and right_position.piece_color != color: 
-                            right_position.piece_map[l-1*color][c] = 4 
+                        if type(right_position) == Piece and right_position.piece.lower() == 'p' and right_position.piece_color != turn: 
+                            right_position.piece_map[l-1*turn][c] = 4 
                 
 
-                # piece_map = self.chessboard[l][c].piece_map
                 if turn == 1:
                     ik, jk = self.white_king_position
                     if (ik, jk) != (-1,-1) and has_check(ik, jk, self.chessboard, -turn):
@@ -189,30 +183,30 @@ class Game():
 
         if cb[i][j].piece_map[l][c] == 3:
             if color == 1:
-                bk.append(cb[l][c].piece) #
+                bk.append(cb[l][c].piece)
             elif color == -1:
-                wk.append(cb[l][c].piece) #
+                wk.append(cb[l][c].piece)
 
         if cb[i][j].piece_map[l][c] == 4 and piece.lower() == 'p':
             if color == 1:
-                bk.append('P') #
+                bk.append('P')
             elif color == -1:
-                wk.append('p') #
+                wk.append('p')
             cb[l-1*color][c] = '.'
 
 
-        cb[i][j] = '.' #
+        cb[i][j] = '.'
         p        = Piece(l, c, cb, piece)
-        cb[l][c] = p #
+        cb[l][c] = p
         
 
         for lin in range(len(cb)):
             for col in range(len(cb[lin])):
                 if type(cb[lin][col]) == Piece:
-                    cb[lin][col].chessboard = deepcopy(cb[l][c].chessboard) #
-                    cb[lin][col].piece_arrange = (lin, col) #
-                    cb[lin][col].piece_map = get_square_matrix(8) #
-                    cb[lin][col].update_move() #
+                    cb[lin][col].chessboard = deepcopy(cb)
+                    cb[lin][col].piece_arrange = (lin, col)
+                    cb[lin][col].piece_map = get_square_matrix(8)
+                    cb[lin][col].update_move()
 
         if p.piece.lower() == 'k':
             ik, jk = l, c
@@ -224,7 +218,6 @@ class Game():
 
         print(ik,jk)
         if (ik,jk) == (-1,-1) or not has_check(ik, jk, cb, turn):
-            print('x')
             if turn == -1:
                 self.white_check = False
                 if p.piece.lower() == 'k':
@@ -304,209 +297,25 @@ class Game():
 
         if enemy_piece.piece.lower() in ['h', 'p']:
             for k, x in friend_pieces_arranges:
-                if self.chessboard[k][x].piece_map[ie][je] in [3]:
+                if self.chessboard[k][x].piece_map[ie][je] == 3:
                     count += 1
 
+        if enemy_piece.piece.lower() == 'p':
+            for k, x in friend_pieces_arranges:
+                if self.chessboard[k][x].piece.lower() == 'p' and self.chessboard[k][x].piece_map[ie-turn][je] == 4:
+                    count += 1
 
         if count == 0:
             return True
         return False
 
 
-def alert_check(game: Game):
-    if game.white_check:
-        output = '\nO rei branco está em \033[91mxeque\033[0m!\n'
-        return output
-    if game.black_check:
-        output = '\nO rei preto está em \033[91mxeque\033[0m!\n'
-        return output
-    return False
+    def alert_check(self):
+        if self.white_check:
+            output = '\nO rei branco está em \033[91mxeque\033[0m!\n'
+            return output
+        if self.black_check:
+            output = '\nO rei preto está em \033[91mxeque\033[0m!\n'
+            return output
+        return False
 
-def main():
-    cleaner = ('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n')
-    os.system('clear')
-    if os.path.exists('/tmp/fifow'):
-        os.remove('/tmp/fifow')
-    if os.path.exists('/tmp/fifor'):
-        os.remove('/tmp/fifor')
-    os.mkfifo('/tmp/fifow')
-    os.mkfifo('/tmp/fifor')
-    os.system('clear')
-
-    gamemode = input('(L)ocal ou (M)ultplayer?')
-
-    turns = [None, 'pretas', 'brancas']
-    turn = -1 
-    game = Game()
-    print('Esperando o oponente conectar...')
-    fr = open('/tmp/fifor') if gamemode == 'M' else None
-    with open('/tmp/fifow', 'w') as fw:
-        fw.write(cleaner)
-        fw.write('Partida iniciada!')
-        fw.flush()
-        if gamemode == 'L':
-            outputfunction = [None, print, print]
-        else:
-            outputfunction = [None, fw.write, print]
-
-
-        while True:
-            for k in [1,-1]:
-                output = alert_check(game)
-                if output:
-                    outputfunction[k](output)
-
-                outputfunction[k]('\nPretas: ' + " ".join(game.black_kills) + '\n')
-                output = show_chessboard(game.chessboard)
-                outputfunction[k](output)
-                outputfunction[k]('\nBrancas: ' + " ".join(game.white_kills) + '\n')
-                outputfunction[k](f'Vez das {turns[turn]}, aguarde o oponente.')
-                fw.flush()
-
-            if stalemate(turn, game.chessboard):
-                outputfunction[turn](f'\n\n\033[95mEmpate\033[0m por afogamento das {turns[turn]}.\n')
-                outputfunction[-turn](f'\n\n\033[95mEmpate\033[0m por afogamento das {turns[turn]}.\n')
-                fw.flush()
-                break
-
-
-            if turn == -1:
-                piece_arrange = input('Selecione sua peça: ')
-            elif turn == 1:
-                if gamemode == 'M':
-                    fw.write('\nSelecione sua peça: \n')
-                    fw.flush
-                    piece_arrange = fr.readline()
-                else:
-                    piece_arrange = input('Selecione sua peça: ')
-
-            if 'desisto' in piece_arrange.lower():
-                outputfunction[turn](f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[-turn]}\n')
-                outputfunction[-turn](f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[-turn]}\n')
-                fw.flush()
-                break
-            elif 'empate' in piece_arrange.lower():
-                if turn == -1:
-                    fw.write(f'\nO oponente sugeriu empate, aceitar? (sim/não)')
-                    fw.flush()
-                    response = fr.readline()
-                elif turn == 1:
-                    response = input(f'\nO oponente sugeriu empate, aceitar? (sim/não): ')
-
-                if 'sim' in response.lower():
-                    outputfunction[turn](f'\n\n\033[95mEmpate\033[0m, ninguém venceu.\n')
-                    outputfunction[-turn](f'\n\n\033[95mEmpate\033[0m, ninguém venceu.\n')
-                    fw.flush()
-                    break
-                else:
-                    outputfunction[turn](cleaner)
-                    outputfunction[-turn](cleaner)
-                    outputfunction[turn](f'\n\nEmpate negado\n')
-                    outputfunction[-turn](f'\n\nEmpate negado\n')
-                    continue
-
-            if (arrange := get_arrange(piece_arrange)) != False:
-                i, j = arrange
-                piece_arrange = arrange
-            else:
-                outputfunction[turn](cleaner)
-                outputfunction[-turn](cleaner)
-                outputfunction[turn]('\nSelecione uma coordenada válida!' + '\n')
-                fw.flush()
-                continue
-
-            if game.chessboard[i][j] == '.':
-                outputfunction[turn](cleaner)
-                outputfunction[-turn](cleaner)
-                outputfunction[turn]('\nSelecione uma peça, você selecionou um espaço vazio...' + '\n')
-                fw.flush()
-                continue
-            elif game.chessboard[i][j].piece_color != turn:
-                outputfunction[turn](cleaner)
-                outputfunction[-turn](cleaner)
-                outputfunction[turn](f'\nAgora é vez das {turns[turn]}, jogue com uma peça válida!' + '\n')
-                fw.flush()
-                continue
-            
-            for k in [1,-1]:
-                outputfunction[k](cleaner)
-                output = alert_check(game)
-                if output:
-                    outputfunction[k](output)
-
-                outputfunction[k]('\nPretas: ' + " ".join(game.black_kills) + '\n')
-                output = show_movies(game.chessboard, game.chessboard[i][j].piece_map)
-                outputfunction[k](output)
-                outputfunction[k]('\nBrancas: ' + " ".join(game.white_kills) + '\n')
-                outputfunction[k](f'Vez das {turns[turn]}, aguarde o oponente.')
-                fw.flush()
-            
-            if turn == -1:
-                movement = input('Selecione o destino (ou digite C para escolher outra peça): ')
-            elif turn == 1:
-                if gamemode == 'M   ':
-                    fw.write('\nSelecione o destino (ou digite C para escolher outra peça): \n')
-                    fw.flush
-                    movement = fr.readline()
-                else:
-                    movement = input('Selecione o destino (ou digite C para escolher outra peça): ')
-
-            if movement.lower() == 'c':
-                outputfunction[turn](cleaner)
-                outputfunction[-turn](cleaner)
-                continue
-
-            if (arrange := get_arrange(movement)) != False:
-                movement = arrange
-
-            else:
-                outputfunction[turn](cleaner)
-                outputfunction[-turn](cleaner)
-                outputfunction[turn]('\nSelecione uma coordenada válida!' + '\n')
-                fw.flush()
-                continue
-
-
-            if not (log := game.move_piece(piece_arrange, movement, turn)) is False:
-
-                if log == 'End Game':
-                    for k in [1,-1]:
-                        outputfunction[k](cleaner)
-                        outputfunction[k]('\nPretas: ' + " ".join(game.black_kills) + '\n')
-                        output = show_chessboard(game.chessboard)
-                        outputfunction[k](output)
-                        outputfunction[k]('\nBrancas: ' + " ".join(game.white_kills) + '\n')
-                        outputfunction[k](f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[turn]}\n')
-                        try:
-                            m,n = game.black_king_position
-                            outputfunction[k](show_movies(game.chessboard,game.chessboard[m][n].piece_map))
-                        except Exception as e:
-                            print('No position')
-                            print(e)
-                        fw.flush()
-                    break
-
-                elif log == 'Você não pode mover para essa casa, seu rei ficará em xeque!':
-                    
-                    outputfunction[turn](cleaner)
-                    outputfunction[-turn](cleaner)
-                    outputfunction[turn]('\n'+log+'\n')
-                    fw.flush()
-                    continue
-                
-                outputfunction[turn](cleaner)
-                outputfunction[-turn](cleaner)
-                outputfunction[turn]('Movimentando...' + '\n')
-                fw.flush()
-                turn = turn * -1
-
-            else:
-                outputfunction[turn](cleaner)
-                outputfunction[-turn](cleaner)
-                outputfunction[turn]('Tente novamente' + '\n')
-                fw.flush()
-
-
-
-if __name__ == '__main__':
-    main()
