@@ -215,7 +215,7 @@ def stream_crazy_game(multiplayer,game,fw=None,fr=None):
                     output_message(output,multiplayer,fw)
                     continue
 
-                if not (log := game.insert_piece(response,arrange,turn)) is False:
+                if not (log := game.insert_piece(response[0],arrange,turn)) is False:
 
                     if log == 'End Game':
                         output = cleaner
