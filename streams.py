@@ -209,31 +209,25 @@ def stream_crazy_game(multiplayer,game,fw=None,fr=None):
                 elif (arrange := get_arrange(arrange)) != False:
                     i, j = arrange
                     piece_arrange = arrange
-                    
-                else:
-                    output = cleaner + 'Selecione uma coordenada válida!'
-                    output_message(output,multiplayer,fw)
-                    continue
 
-                if not (log := game.insert_piece(response[0],arrange,turn)) is False:
+                    if (log := game.insert_piece(response[0],arrange,turn)) != False:
+                        if log == 'End Game':
+                            output = cleaner
+                            output += '\nPretas: ' + " ".join(game.black_kills) + '\n'
+                            output += show_chessboard(game.chessboard)
+                            output += '\nBrancas: ' + " ".join(game.white_kills) + '\n'
+                            output += f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[turn]}'
+                            output_message(output,multiplayer,fw)
+                            break
 
-                    if log == 'End Game':
-                        output = cleaner
-                        output += '\nPretas: ' + " ".join(game.black_kills) + '\n'
-                        output += show_chessboard(game.chessboard)
-                        output += '\nBrancas: ' + " ".join(game.white_kills) + '\n'
-                        output += f'\n\n\033[95mXeque mate\033[0m, vitória das {turns[turn]}'
+                        output = cleaner + 'Colocando peça...'
                         output_message(output,multiplayer,fw)
-                        break
+                        turn = turn * -1
+                        continue
 
-                    output = cleaner + 'Colocando peça...'
-                    output_message(output,multiplayer,fw)
-                    turn = turn * -1
-                    continue
-                else:
-                    output = cleaner + 'Tente novamente'
-                    output_message(output,multiplayer,fw)
-                    continue
+            output = cleaner + 'Selecione uma coordenada válida!'
+            output_message(output,multiplayer,fw)
+            continue
 
         if game.chessboard[i][j] == '.':
             output = cleaner + 'Selecione uma peça, você selecionou um espaço vazio...'

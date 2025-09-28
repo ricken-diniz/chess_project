@@ -18,7 +18,7 @@ def get_initial_game(Piece: object, gametype):
 
     return chessboard
 
-def get_chessboard(chessboard_type = 'dict'):
+def get_chessboard(chessboard_type = 'normalgame'):
     if chessboard_type == 'empty':
         chessboard = [['.' for _ in range(8)] for _ in range(8)]
 
@@ -206,6 +206,24 @@ def get_chessboard(chessboard_type = 'dict'):
 
             ['.','.','.','.','.','.','.','.'],
         ]
+    elif chessboard_type == 'crazymate':
+        chessboard = [
+            ['.','.','.','.','.','.','r','k'],
+
+            ['.','.','.','.','.','.','p','p'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','R'],
+
+            ['.','.','.','K','.','.','.','Q'],
+
+            ['.','.','.','.','.','.','.','.'],
+        ]
     return chessboard
 
 def show_chessboard(chessboard):
@@ -323,7 +341,7 @@ def has_check(i, j, chessboard, turn):
             for c in range(len(chessboard)):
                 if type(chessboard[l][c]) != str and chessboard[l][c].piece_color != turn:
                         enimy_piece_map = chessboard[l][c].piece_map
-                        if enimy_piece_map[i][j] in [3,7] or chessboard[l][c].piece.lower() != 'p' and enimy_piece_map[i][j] == 1:
+                        if enimy_piece_map[i][j] in [3,5,7] or chessboard[l][c].piece.lower() != 'p' and enimy_piece_map[i][j] == 1:
                             return True
         
         return False
@@ -369,3 +387,17 @@ def stalemate(turn, chessboard):
     if count > 0:
         return False
     return True
+
+def has_king(piece):
+    if type(piece) != str and piece.piece.lower() == 'k' or type(piece) == str and piece.lower() == 'k':
+        return True
+    return False
+
+def update_all_moves(cb):
+    for lin in range(len(cb)):
+        for col in range(len(cb[lin])):
+            if type(cb[lin][col]) != str:
+                cb[lin][col].chessboard = deepcopy(cb)
+                cb[lin][col].piece_arrange = (lin, col)
+                cb[lin][col].piece_map = get_square_matrix(8)
+                cb[lin][col].update_move()
