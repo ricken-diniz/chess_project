@@ -77,7 +77,7 @@ def main():
             print('\nXadrez maluco, você pode realocar uma peça capturada para o seu exército, ao invés de fazer\num movimento padrão de jogo. Para isso, basta digitar a letra da peça capturada em sua jogada. \nNote que há diferenciação de maiúsculas e minúsculas, exemplo: "p" é um peão preto.\n')
             confirm = input('Confirmar? (Yes/No): ')
             if confirm.lower() in 'yes':
-                game = CrazyChess()
+                game = CrazyChess('crazymate')
                 stream_game = stream_crazy_game
                 break
         elif gamemod == '4':
@@ -98,6 +98,8 @@ def main():
             os.remove('/tmp/fifor')
         os.mkfifo('/tmp/fifow')
         os.mkfifo('/tmp/fifor')
+        os.system('chmod a+rwx /tmp/fifow')
+        os.system('chmod a+rwx /tmp/fifor')
         os.system('clear')
         print('Esperando o oponente conectar...')
         fr = open('/tmp/fifor')
