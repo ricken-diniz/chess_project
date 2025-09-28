@@ -1,6 +1,6 @@
 from gamemods.chess import Chess
 from pieces_movement import Piece
-from utils import has_check,deepcopy,deepcopy_list,get_square_matrix
+from utils import has_check,update_all_moves,deepcopy_list
 
 class AtomicChess(Chess):
 
@@ -57,18 +57,12 @@ class AtomicChess(Chess):
             return False
 
     def validate_move(self, i, j, l, c, turn):   
-        cb = deepcopy(self.chessboard)
+        cb = self.copy_chessboard()
         wk = deepcopy_list(self.white_kills)
         bk = deepcopy_list(self.black_kills)
-
-        for ix in range(len(cb)):
-            for jx in range(len(cb[ix])):
-                if type(cb[ix][jx]) == Piece:
-                    cb[ix][jx] = self.chessboard[ix][jx].clone()
-
         color = cb[i][j].piece_color
-        piece = cb[i][j].piece    
-        piece_map = cb[i][j].piece_map    
+        piece = cb[i][j].piece
+        piece_map = cb[i][j].piece_map
 
         atomic_houses = [
             (l-1,c-1),
@@ -86,49 +80,20 @@ class AtomicChess(Chess):
             for m, n in atomic_houses:
                 if m >= 0 and m <= 7 and n >= 0 and n <= 7 and type(cb[m][n]) == Piece and not (cb[m][n].piece.lower() == 'k' and cb[m][n].piece_color == turn):
                     if color == 1:
-                        bk.append(cb[m][n].piece) #
+                        bk.append(cb[m][n].piece) 
                     elif color == -1:
-                        wk.append(cb[m][n].piece) #
+                        wk.append(cb[m][n].piece) 
                     cb[m][n] = '.'
 
         cb[i][j] = '.'        
         if piece.lower() == 'k' or piece_map[l][c] == 1:
             p        = Piece(l, c, cb, piece)
-            cb[l][c] = p #
+            cb[l][c] = p 
         
+        update_all_moves(cb)
 
-        for lin in range(len(cb)):
-            for col in range(len(cb[lin])):
-                if type(cb[lin][col]) == Piece:
-                    cb[lin][col].chessboard = deepcopy(cb) #
-                    cb[lin][col].piece_arrange = (lin, col) #
-                    cb[lin][col].piece_map = get_square_matrix(8) #
-                    cb[lin][col].update_move() #
-
-        if piece.lower() == 'k':
-            ik, jk = l, c
-        else:
-            if turn == 1:
-                ik,jk = self.black_king_position
-            elif turn == -1:
-                ik,jk = self.white_king_position
-
-        print(ik,jk)
-        if (ik,jk) == (-1,-1) or not has_check(ik, jk, cb, turn):
-            if turn == -1:
-                self.white_check = False
-                if piece.lower() == 'k':
-                    self.white_king_position = ik, jk
-            elif turn == 1:
-                self.black_check = False
-                if piece.lower() == 'k':
-                    self.black_king_position = ik, jk
-
-            self.chessboard = cb
-            self.white_kills = wk
-            self.black_kills = bk
+        if self.conclude_move(piece, cb, wk, bk, l, c, turn):
             return True
-        
         return False
     
     def king_captured(self, turn):

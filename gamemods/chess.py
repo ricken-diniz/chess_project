@@ -1,5 +1,5 @@
 from pieces_movement import Piece
-from utils import get_initial_game,deepcopy,deepcopy_list,has_check,get_square_matrix
+from utils import get_initial_game,deepcopy_list,has_check,get_square_matrix, update_all_moves
 
 class Chess():
     def __init__(self, gamemod = 'normalgame'):
@@ -168,26 +168,20 @@ class Chess():
                 self.chessboard[ibk][jbk].piece_map[0][6] = 4
             
     def validate_move(self, i, j, l, c, turn):   
-        cb = deepcopy(self.chessboard)
+        cb = self.copy_chessboard()
         wk = deepcopy_list(self.white_kills)
         bk = deepcopy_list(self.black_kills)
-
-        for ix in range(len(cb)):
-            for jx in range(len(cb[ix])):
-                if type(cb[ix][jx]) == Piece:
-                    cb[ix][jx] = self.chessboard[ix][jx].clone()
-
-
         color = cb[i][j].piece_color
         piece = cb[i][j].piece
+        piece_map = cb[i][j].piece_map
 
-        if cb[i][j].piece_map[l][c] == 3:
+        if piece_map[l][c] == 3:
             if color == 1:
                 bk.append(cb[l][c].piece)
             elif color == -1:
                 wk.append(cb[l][c].piece)
 
-        if cb[i][j].piece_map[l][c] == 4 and piece.lower() == 'p':
+        if piece_map[l][c] == 4 and piece.lower() == 'p':
             if color == 1:
                 bk.append('P')
             elif color == -1:
@@ -199,39 +193,10 @@ class Chess():
         p        = Piece(l, c, cb, piece)
         cb[l][c] = p
         
+        update_all_moves(cb)
 
-        for lin in range(len(cb)):
-            for col in range(len(cb[lin])):
-                if type(cb[lin][col]) == Piece:
-                    cb[lin][col].chessboard = deepcopy(cb)
-                    cb[lin][col].piece_arrange = (lin, col)
-                    cb[lin][col].piece_map = get_square_matrix(8)
-                    cb[lin][col].update_move()
-
-        if p.piece.lower() == 'k':
-            ik, jk = l, c
-        else:
-            if turn == 1:
-                ik,jk = self.black_king_position
-            elif turn == -1:
-                ik,jk = self.white_king_position
-
-        print(ik,jk)
-        if (ik,jk) == (-1,-1) or not has_check(ik, jk, cb, turn):
-            if turn == -1:
-                self.white_check = False
-                if p.piece.lower() == 'k':
-                    self.white_king_position = ik, jk
-            elif turn == 1:
-                self.black_check = False
-                if p.piece.lower() == 'k':
-                    self.black_king_position = ik, jk
-
-            self.chessboard = cb
-            self.white_kills = wk
-            self.black_kills = bk
+        if self.conclude_move(piece, cb, wk, bk, l, c, turn):
             return True
-        
         return False
 
     def has_mate(self, turn, enemy_piece: Piece):
@@ -309,7 +274,6 @@ class Chess():
             return True
         return False
 
-
     def alert_check(self):
         if self.white_check:
             output = '\nO rei branco está em \033[91mxeque\033[0m!\n'
@@ -319,3 +283,48 @@ class Chess():
             return output
         return False
 
+    def copy_chessboard(self):
+        cb = []
+
+        for i in range(len(self.chessboard)):
+            line = []
+            for j in range(len(self.chessboard[i])):
+                if type(self.chessboard[i][j]) == Piece:
+                    line.append(self.chessboard[i][j].clone())
+                else:
+                    line.append(self.chessboard[i][j])
+            cb.append(line)
+
+        return cb
+
+    def conclude_move(self, piece, cb, wk, bk, l, c, turn):
+        if turn == 1:
+            ik,jk = self.black_king_position
+            il,jl = self.white_king_position
+        elif turn == -1:
+            ik,jk = self.white_king_position
+            il,jl = self.black_king_position
+            
+        if piece.lower() == 'k':
+            ik, jk = l, c
+
+        if (ik,jk) == (-1,-1) or not has_check(ik, jk, cb, turn):
+            if type(cb[il][jl]) == Piece:
+                cb[il][jl].piece_map = get_square_matrix(8) 
+                cb[il][jl].update_move() 
+
+            if turn == -1:
+                self.white_check = False
+                if piece.lower() == 'k':
+                    self.white_king_position = ik, jk
+            elif turn == 1:
+                self.black_check = False
+                if piece.lower() == 'k':
+                    self.black_king_position = ik, jk
+
+            self.chessboard = cb
+            self.white_kills = wk
+            self.black_kills = bk
+            return True
+        
+        return False
