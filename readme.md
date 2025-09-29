@@ -24,4 +24,5 @@ Foram aplicadas manipulações de terminal e comandos linux, usando o pacote pyt
 
 Além disso, vários conceitos de lógica de programação foram aplicados, como algoritmos conhecidos como: contador, distância euclidiana, função afim, e diversos tipos de lógicas para possibilitar a criação de todas as regras!
 
-Para completar, a infraestrutura foi montada em cima do modo de jogo local e multiplayer, permitindo jogar de forma competitiva em diferentes desktops, acessando uma mesma máquina. Para isso, foi utilizado a técnica em pipeline conhecida como fifo, que permite a transição de entradas e saídas dinâmicas.                                                                                                          
+Para completar, a infraestrutura foi montada em cima do modo de jogo local e multiplayer, permitindo jogar de forma competitiva em diferentes desktops, acessando uma mesma máquina. Para isso, foi utilizado a técnica em pipeline conhecida como fifo, que permite a transição de entradas e saídas dinâmicas.
+                                                                                                          
