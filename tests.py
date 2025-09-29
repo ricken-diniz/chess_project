@@ -9,7 +9,6 @@ class FeaturesTests():
         chessboard = get_initial_game(Piece)
 
         show_chessboard(chessboard)
-        # show_pieces_map(chessboard)
 
     def validate_has_check(self):
         chessboard = get_chessboard('empty')
@@ -42,12 +41,12 @@ class FeaturesTests():
             qcolor, rcolor, turn, hcheck = tuple
 
             queen = 'Q' if qcolor == -1 else 'q'
-            rock = 'R' if rcolor == -1 else 'r'
+            rook = 'R' if rcolor == -1 else 'r'
 
             p = Piece(0, 0, chessboard, queen)
             chessboard[0][0] = p
 
-            p = Piece(7, 0, chessboard, rock)
+            p = Piece(7, 0, chessboard, rook)
             chessboard[7][0] = p
 
             if has_check(7, 7, chessboard, turn) == hcheck:
@@ -94,7 +93,6 @@ class FeaturesTests():
 
 def main():
     
-    M = []
     points = [
         (6,4,1),
         (5,3,1),
