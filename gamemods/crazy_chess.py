@@ -3,15 +3,15 @@ from pieces_movement import Piece
 from utils import has_check, get_square_matrix, update_all_moves
 
 class CrazyChess(Chess):
-    def has_mate(self, turn, enemy_piece):
+    def has_mate(self, turn, atacking_enemies):
         ik, jk = self.white_king_position if turn == 1 else self.black_king_position
 
         if (ik,jk) == (-1,-1):
             return False 
 
-        if super().has_mate(turn, enemy_piece):
-            if not enemy_piece.piece.lower() in ['n','p'] and ((turn == 1 and len(self.white_kills) > 0) or (turn == -1 and len(self.black_kills) > 0)):
-                ie, je = enemy_piece.piece_arrange
+        if super().has_mate(turn, atacking_enemies):
+            if not len(atacking_enemies) < 2 and not atacking_enemies[0].piece.lower() in ['n','p'] and ((turn == 1 and len(self.white_kills) > 0) or (turn == -1 and len(self.black_kills) > 0)):
+                ie, je = atacking_enemies[0].piece_arrange
                 euclidean_distance = ((ik - ie)**2 + (jk - je)**2)
 
                 if euclidean_distance > 2:
@@ -45,19 +45,21 @@ class CrazyChess(Chess):
 
                 if turn == 1:
                     self.black_kills.remove(captured_piece)
-                    self.black_check = False
-                    ie, je = self.white_king_position
-                    if (ie, je) != (-1,-1) and has_check(ie, je, self.chessboard, -turn):
-                        self.white_check = True
+                    ik, jk = self.white_king_position
+                    if (ik, jk) != (-1,-1):
+                        atacking_enemies = self.has_check(ik, jk, self.chessboard, -turn)
+                        self.white_check = True if len(atacking_enemies) > 0 else False
+
 
                 if turn == -1:
                     self.white_kills.remove(captured_piece)
-                    self.white_check = False
-                    ie, je = self.black_king_position
-                    if (ie, je) != (-1,-1) and has_check(ie, je, self.chessboard, -turn):
-                        self.black_check = True
+                    ik, jk = self.black_king_position
+                    if (ik, jk) != (-1,-1):
+                        atacking_enemies = self.has_check(ik, jk, self.chessboard, -turn)
+                        self.black_check = True if len(atacking_enemies) > 0 else False
 
-                if (self.black_check or self.white_check) and self.has_mate(turn, self.chessboard[i][j]):
+
+                if len(atacking_enemies) > 0 and self.has_mate(turn, atacking_enemies):
                     return 'End Game'
 
                 return True

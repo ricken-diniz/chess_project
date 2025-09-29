@@ -1,6 +1,6 @@
 from gamemods.chess import Chess
 from pieces_movement import Piece
-from utils import deepcopy_list, get_square_matrix
+from utils import deepcopy_list, get_square_matrix, update_all_moves
 
 class DuckPiece(Piece):
     def __init__(self, i, j, chessboard, piece, piece_map = None):
@@ -46,3 +46,36 @@ class DuckChess(Chess):
     def __init__(self, gamemod='duckchess'):
         super().__init__(gamemod, DuckPiece)
     
+    def move_duck(self, duck_position, movement, turn):
+        i, j = duck_position
+        l, c = movement
+        cb = self.copy_chessboard()
+
+        cb[i][j] = '.'
+        p        = self.pieceGameObject(l, c, cb, 'duck')
+        cb[l][c] = p
+        update_all_moves(cb)
+
+        if turn == 1:
+            ik,jk = self.black_king_position
+            il,jl = self.white_king_position
+        elif turn == -1:
+            ik,jk = self.white_king_position
+            il,jl = self.black_king_position
+
+        atacking_enemies = self.has_check(ik, jk, cb, turn)
+
+        if type(cb[il][jl]) == self.pieceGameObject:
+            cb[il][jl].piece_map = get_square_matrix(8) 
+            cb[il][jl].update_move() 
+            atacking_friends = self.has_check(il, jl, cb, -turn)
+            
+        if (ik,jk) != (-1,-1) and len(atacking_enemies) > 0:
+            return 'Você não pode mover para essa casa, seu rei ficará em xeque!'
+
+        self.chessboard = cb
+        if len(atacking_friends) > 0 and self.has_mate(turn, atacking_friends):
+            return 'End Game'
+        
+        return True
+            

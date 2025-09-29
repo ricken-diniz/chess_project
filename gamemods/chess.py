@@ -62,17 +62,18 @@ class Chess():
 
             if turn == 1:
                 ik, jk = self.white_king_position
-                if (ik, jk) != (-1,-1) and has_check(ik, jk, self.chessboard, -turn):
-                    self.white_check = True
+                if (ik, jk) != (-1,-1):
+                    atacking_enemies = self.has_check(ik, jk, self.chessboard, -turn)
+                    self.white_check = True if len(atacking_enemies) > 0 else False
 
             if turn == -1:
                 ik, jk = self.black_king_position
-                if (ik, jk) != (-1,-1) and has_check(ik, jk, self.chessboard, -turn):
-                    self.black_check = True
+                if (ik, jk) != (-1,-1):
+                    atacking_enemies = self.has_check(ik, jk, self.chessboard, -turn)
+                    self.black_check = True if len(atacking_enemies) > 0 else False
 
-            if self.black_check or self.white_check:
-                if self.has_mate(turn, self.chessboard[l][c]):
-                    return 'End Game'
+            if len(atacking_enemies) > 0 and self.has_mate(turn, atacking_enemies):
+                return 'End Game'
                 
             return True
             
@@ -199,7 +200,9 @@ class Chess():
             return True
         return False
 
-    def has_mate(self, turn, enemy_piece):
+    def has_mate(self, turn, atacking_enemies):
+        m, n = atacking_enemies[0]
+        enemy_piece = self.chessboard[m][n]
         count = 0
 
         if turn == 1:
@@ -219,56 +222,56 @@ class Chess():
                 if king_map[i][j] in [1,3] and not has_check(i, j, self.chessboard, -turn):
                     count += 1
 
+        if len(atacking_enemies) < 2:
+            friend_pieces_arranges = []
+            for i in range(len(self.chessboard)):
+                for j in range(len(self.chessboard[i])):
+                    if type(self.chessboard[i][j]) == self.pieceGameObject and self.chessboard[i][j].piece_color == -turn:
+                        friend_pieces_arranges.append((i,j))
 
-        friend_pieces_arranges = []
-        for i in range(len(self.chessboard)):
-            for j in range(len(self.chessboard[i])):
-                if type(self.chessboard[i][j]) == self.pieceGameObject and self.chessboard[i][j].piece_color == -turn:
-                    friend_pieces_arranges.append((i,j))
+            if enemy_piece.piece.lower() in ['r', 'q']:
+                if jk == je:
+                    if ik > ie:
+                        enemy_range = range(ie, ik)
+                    else:
+                        enemy_range = range(ie, ik, -1)
+                    for i in enemy_range:
+                        for k, x in friend_pieces_arranges:
+                            if self.chessboard[k][x].piece_map[i][jk] in [1, 3, 4]:
+                                count += 1
 
-        if enemy_piece.piece.lower() in ['r', 'q']:
-            if jk == je:
+                elif ik == ie:
+                    if jk > je:
+                        enemy_range = range(je, jk)
+                    else:
+                        enemy_range = range(je, jk, -1)
+                    for j in enemy_range:
+                        for k, x in friend_pieces_arranges:
+                            if self.chessboard[k][x].piece_map[ik][j] in [1, 3, 4]:
+                                count += 1
+
+            if enemy_piece.piece.lower() in ['b', 'q']:
+                direction_i = 1 if ik > ie else -1
+                direction_j = 1 if jk > je else -1
+
                 if ik > ie:
-                    enemy_range = range(ie, ik)
+                    enemy_range = range(0, ik-ie)
                 else:
-                    enemy_range = range(ie, ik, -1)
+                    enemy_range = range(0, ie-ik)
                 for i in enemy_range:
                     for k, x in friend_pieces_arranges:
-                        if self.chessboard[k][x].piece_map[i][jk] in [1, 3, 4]:
+                        if self.chessboard[k][x].piece_map[ie + i*direction_i][je + i*direction_j] in [1, 3, 4]:
                             count += 1
 
-            elif ik == ie:
-                if jk > je:
-                    enemy_range = range(je, jk)
-                else:
-                    enemy_range = range(je, jk, -1)
-                for j in enemy_range:
-                    for k, x in friend_pieces_arranges:
-                        if self.chessboard[k][x].piece_map[ik][j] in [1, 3, 4]:
-                            count += 1
-
-        if enemy_piece.piece.lower() in ['b', 'q']:
-            direction_i = 1 if ik > ie else -1
-            direction_j = 1 if jk > je else -1
-
-            if ik > ie:
-                enemy_range = range(0, ik-ie)
-            else:
-                enemy_range = range(0, ie-ik)
-            for i in enemy_range:
+            if enemy_piece.piece.lower() in ['h', 'p']:
                 for k, x in friend_pieces_arranges:
-                    if self.chessboard[k][x].piece_map[ie + i*direction_i][je + i*direction_j] in [1, 3, 4]:
+                    if self.chessboard[k][x].piece_map[ie][je] == 3:
                         count += 1
 
-        if enemy_piece.piece.lower() in ['h', 'p']:
-            for k, x in friend_pieces_arranges:
-                if self.chessboard[k][x].piece_map[ie][je] == 3:
-                    count += 1
-
-        if enemy_piece.piece.lower() == 'p':
-            for k, x in friend_pieces_arranges:
-                if self.chessboard[k][x].piece.lower() == 'p' and self.chessboard[k][x].piece_map[ie-turn][je] == 4:
-                    count += 1
+            if enemy_piece.piece.lower() == 'p':
+                for k, x in friend_pieces_arranges:
+                    if self.chessboard[k][x].piece.lower() == 'p' and self.chessboard[k][x].piece_map[ie-turn][je] == 4:
+                        count += 1
 
         if count == 0:
             return True
@@ -328,3 +331,15 @@ class Chess():
             return True
         
         return False
+
+    def has_check(self, i, j, chessboard, turn):
+        atacking_enemies = []
+
+        for l in range(len(chessboard)):
+            for c in range(len(chessboard)):
+                if type(chessboard[l][c]) != str and chessboard[l][c].piece_color != turn:
+                        enimy_piece_map = chessboard[l][c].piece_map
+                        if enimy_piece_map[i][j] in [3,5,7] or chessboard[l][c].piece.lower() != 'p' and enimy_piece_map[i][j] == 1:
+                            atacking_enemies.append((l, c))
+
+        return atacking_enemies

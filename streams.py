@@ -261,12 +261,13 @@ def stream_duck_game(multiplayer,game,fw=None,fr=None):
                     continue
                     
                 if (i,j) != duck_position and game.chessboard[i][j] == '.':
-                    if not (log := game.move_piece(duck_position, movement, turn)) is False:
+                    if (log := game.move_duck(duck_position, movement, turn)) != False:
 
                         if log == 'Você não pode mover para essa casa, seu rei ficará em xeque!' or log == 'End Game':
                             id, jd = duck_position
                             game.chessboard[i][j],game.chessboard[id][jd] = game.chessboard[id][jd],game.chessboard[i][j]
                             end_game = True
+                            suicide = True if log != 'End Game' else False
                             break
 
                         output = cleaner + 'Movimentando o pato...'
@@ -284,8 +285,9 @@ def stream_duck_game(multiplayer,game,fw=None,fr=None):
                 continue
             
             if end_game:
-                check_mate(multiplayer, game, -turn, turns, fw, cleaner)
-                output = 'O pato é traiçoeiro! Ele sempre tem que ser movido!\nPor isso, você perdeu o jogo!'
+                turn = -turn if suicide else turn
+                check_mate(multiplayer, game, turn, turns, fw, cleaner)
+                output = 'O pato é traiçoeiro! Ele sempre tem que ser movido e pode deixar seu rei na mão!\nPor isso, você perdeu o jogo!'
                 output_message(output,multiplayer,fw)
                 return 'break'
 
