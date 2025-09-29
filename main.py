@@ -81,7 +81,7 @@ def main():
             print('\nXadrez maluco, você pode realocar uma peça capturada para o seu exército, ao invés de fazer\num movimento padrão de jogo. Para isso, basta digitar a letra da peça capturada em sua jogada. \nNote que há diferenciação de maiúsculas e minúsculas, exemplo: "p" é um peão preto.\n')
             confirm = input('Confirmar? (Yes/No): ')
             if confirm.lower() in 'yes':
-                game = CrazyChess('crazymate')
+                game = CrazyChess()
                 stream_game = stream_crazy_game
                 break
 
