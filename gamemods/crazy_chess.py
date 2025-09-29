@@ -10,7 +10,10 @@ class CrazyChess(Chess):
             return False 
 
         if super().has_mate(turn, atacking_enemies):
-            if not len(atacking_enemies) < 2 and not atacking_enemies[0].piece.lower() in ['n','p'] and ((turn == 1 and len(self.white_kills) > 0) or (turn == -1 and len(self.black_kills) > 0)):
+            print('ja dava pra ter sido mate')
+            i, j = atacking_enemies[0]
+            enemy_piece = self.chessboard[i][j]
+            if len(atacking_enemies) >= 2 and not enemy_piece.piece.lower() in ['n','p'] and ((turn == 1 and len(self.white_kills) > 0) or (turn == -1 and len(self.black_kills) > 0)):
                 ie, je = atacking_enemies[0].piece_arrange
                 euclidean_distance = ((ik - ie)**2 + (jk - je)**2)
 
