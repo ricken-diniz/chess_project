@@ -72,9 +72,10 @@ class Chess():
                     atacking_enemies = self.has_check(ik, jk, self.chessboard, -turn)
                     self.black_check = True if len(atacking_enemies) > 0 else False
 
-            if len(atacking_enemies) > 0 and self.has_mate(turn, atacking_enemies):
+            if (ik, jk) != (-1,-1) and len(atacking_enemies) > 0 and self.has_mate(turn, atacking_enemies):
                 return 'End Game'
                 
+            self.has_hook()
             return True
             
         return False
@@ -130,8 +131,6 @@ class Chess():
         return True
 
     def check_hook(self, piece, i, j, color):
-        iwk, jwk = self.white_king_position
-        ibk, jbk = self.black_king_position
 
         if piece.lower() == 'k':
             if color == 1:
@@ -153,15 +152,20 @@ class Chess():
 
         elif piece == 'R' and (i, j) == (7, 7):
             self.white_right_hook = False
+        
 
-        if not(iwk,jwk) == (-1,-1) and (iwk,jwk) == (7,4):
+    def has_hook(self):
+        iwk, jwk = self.white_king_position
+        ibk, jbk = self.black_king_position
+        
+        if (iwk,jwk) == (7,4):
             if self.white_left_hook:
                 self.chessboard[iwk][jwk].piece_map[7][2] = 4
 
             if self.white_right_hook:
                 self.chessboard[iwk][jwk].piece_map[7][6] = 4
 
-        if not(ibk,jbk) == (-1,-1) and (ibk,jbk) == (0,4):
+        if (ibk,jbk) == (0,4):
             if self.black_left_hook:
                 self.chessboard[ibk][jbk].piece_map[0][2] = 4
                 
@@ -201,6 +205,7 @@ class Chess():
         return False
 
     def has_mate(self, turn, atacking_enemies):
+        print('verificando mate')
         m, n = atacking_enemies[0]
         enemy_piece = self.chessboard[m][n]
         count = 0
@@ -258,10 +263,14 @@ class Chess():
                     enemy_range = range(0, ik-ie)
                 else:
                     enemy_range = range(0, ie-ik)
-                for i in enemy_range:
-                    for k, x in friend_pieces_arranges:
-                        if self.chessboard[k][x].piece_map[ie + i*direction_i][je + i*direction_j] in [1, 3, 4]:
-                            count += 1
+
+                if not (ie == ik or je == jk):
+                    for i in enemy_range:
+                        if ie == ik or je == jk:
+                            break
+                        for k, x in friend_pieces_arranges:
+                            if self.chessboard[k][x].piece_map[ie + i*direction_i][je + i*direction_j] in [1, 3, 4]:
+                                count += 1
 
             if enemy_piece.piece.lower() in ['h', 'p']:
                 for k, x in friend_pieces_arranges:
@@ -320,6 +329,7 @@ class Chess():
                 self.white_check = False
                 if piece.lower() == 'k':
                     self.white_king_position = ik, jk
+                    
             elif turn == 1:
                 self.black_check = False
                 if piece.lower() == 'k':

@@ -65,6 +65,7 @@ class CrazyChess(Chess):
                 if len(atacking_enemies) > 0 and self.has_mate(turn, atacking_enemies):
                     return 'End Game'
 
+                self.has_hook()
                 return True
         
         return False
