@@ -3,6 +3,7 @@ from utils import affine_function, get_square_matrix, deepcopy_list, has_check, 
 class Piece():
 
     def __init__(self, i, j, chessboard, piece, piece_map = None):
+        self.pieceGameObject = Piece
         white_pieces = ['K','Q','R','B','N','P']
         black_pieces = ['k','q','r','b','n','p']
 
@@ -31,7 +32,7 @@ class Piece():
         black_pieces = ['k','q','r','b','n','p']
         piece        = None
 
-        if type(self.chessboard[i][j]) == Piece:
+        if type(self.chessboard[i][j]) == self.pieceGameObject:
             piece = self.chessboard[i][j].piece
 
         elif type(self.chessboard[i][j]) == str and (self.chessboard[i][j] in white_pieces or self.chessboard[i][j] in black_pieces):
@@ -83,7 +84,7 @@ class Piece():
 
     def clone(self):
         i, j = self.piece_arrange
-        return Piece(i, j, self.chessboard, self.piece, self.piece_map)
+        return self.pieceGameObject(i, j, self.chessboard, self.piece, self.piece_map)
 
 
     def spawn_pointers_bishop(self):
@@ -102,8 +103,8 @@ class Piece():
         sdc = secondary_diagonal_coefficient
 
         for _ in range(less - 1, -1, -1):
-            x, y        = affine_function(1, _, pdc)
-            lin, col    = (x, y)     if j > i else     (y, x)
+            lin, col = affine_function(1, _, pdc)
+            lin, col    = (lin, col)     if j > i else     (col, lin)
             if log := self.verify_has_piece(lin, col):   
                 if log == 'Yes' and lin > 0 and col > 0 and has_king(self.chessboard[lin][col]):
                     self.piece_map[lin-1][col-1] = 7
@@ -111,8 +112,8 @@ class Piece():
             M[lin][col] = 1
 
         for _ in range(less + 1, len(M) - pdc):
-            x, y        = affine_function(1, _, pdc)
-            lin, col    = (x, y)     if j > i else     (y, x)
+            lin, col = affine_function(1, _, pdc)
+            lin, col    = (lin, col)    if j > i else     (col, lin)
             if log := self.verify_has_piece(lin, col):     
                 if log == 'Yes' and lin < 7 and col < 7 and has_king(self.chessboard[lin][col]):
                     self.piece_map[lin+1][col+1] = 7   
@@ -128,8 +129,7 @@ class Piece():
             range_down = range(i + 1, len(M))
 
         for _ in range_up:
-            x, y        = affine_function(-1, _, l + sdc)
-            lin, col    = (x, y)
+            lin, col = affine_function(-1, _, l + sdc)
             if log := self.verify_has_piece(lin, col):
                 if log == 'Yes' and lin > 0 and col < 7 and has_king(self.chessboard[lin][col]):
                     self.piece_map[lin-1][col+1] = 7         
@@ -137,8 +137,7 @@ class Piece():
             M[lin][col] = 1
 
         for _ in range_down:
-            x, y        = affine_function(-1, _, l + sdc)
-            lin, col    = (x, y)
+            lin, col = affine_function(-1, _, l + sdc)
             if log := self.verify_has_piece(lin, col): 
                 if log == 'Yes' and lin < 7 and col > 0 and has_king(self.chessboard[lin][col]):
                     self.piece_map[lin+1][col-1] = 7             

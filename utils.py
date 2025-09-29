@@ -11,7 +11,7 @@ def get_initial_game(Piece: object, gametype):
         for col in range(len(chessboard[lin])):
 
             piece = chessboard[lin][col]
-            if piece in white_pieces or piece in black_pieces:
+            if piece in white_pieces or piece in black_pieces or piece == 'duck':
 
                 p                    = Piece(lin, col, chessboard, piece)
                 chessboard[lin][col] = p
@@ -31,6 +31,24 @@ def get_chessboard(chessboard_type = 'normalgame'):
             ['.','.','.','.','.','.','.','.'],
 
             ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['P','P','P','P','P','P','P','P'],
+
+            ['R','N','B','Q','K','B','N','R'],
+        ]
+    elif chessboard_type == 'duckchess':
+        chessboard = [
+            ['r','n','b','q','k','b','n','r'],
+
+            ['p','p','p','p','p','p','p','p'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','duck','.','.','.','.'],
 
             ['.','.','.','.','.','.','.','.'],
 
@@ -188,6 +206,42 @@ def get_chessboard(chessboard_type = 'normalgame'):
 
             ['.','.','.','.','.','.','.','.'],
         ]
+    elif chessboard_type == 'duckstalemate':
+        chessboard = [
+            ['.','.','.','.','.','.','.','K'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['R','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','. ','.','.','.','.','duck','duck'],
+
+            ['.','.','.','.','.','.','duck','k'],
+        ]
+    elif chessboard_type == 'duckdefensecheck':
+        chessboard = [
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','k','.','.','.','.'],
+
+            ['.','.','.','duck','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','Q','.','.','.'],
+
+            ['.','. ','.','.','R','.','K','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+        ]
     elif chessboard_type == 'defenseandattack':
         chessboard = [
             ['.','.','.','.','.','.','.','k'],
@@ -241,10 +295,13 @@ def show_chessboard(chessboard):
         for e in line:
 
             if type(e) != str:
-                if e.piece_color == -1:
-                    e = f'{r[controller]}\033[38;5;88m   {e.piece}   \033[0m'
+                element = f'   {e.piece}   ' 
+                if e.piece == 'duck':
+                    e = f'{r[controller]}\033[38;5;178m duck  \033[0m'
+                elif e.piece_color == -1:
+                    e = f'{r[controller]}\033[38;5;88m{element}\033[0m'
                 else:
-                    e = f'{r[controller]}\033[38;5;0m   {e.piece}   \033[0m'
+                    e = f'{r[controller]}\033[38;5;0m{element}\033[0m'
                 lin.append(e)
 
             else:
@@ -275,10 +332,13 @@ def show_movies(chessboard, piece_map):
         for j in range(len(chessboard[i])):
             if type(chessboard[i][j]) != str:
                 e = chessboard[i][j]
-                if e.piece_color == -1:
-                    e = f'{r[controller]}\033[38;5;88m   {e.piece}   \033[0m'
+                element = f'   {e.piece}   '
+                if e.piece == 'duck':
+                    e = f'{r[controller]}\033[38;5;178m duck  \033[0m'
+                elif e.piece_color == -1:
+                    e = f'{r[controller]}\033[38;5;88m{element}\033[0m'
                 else:
-                    e = f'{r[controller]}\033[38;5;0m   {e.piece}   \033[0m'
+                    e = f'{r[controller]}\033[38;5;0m{element}\033[0m'
                 
             else:
                 e = f'{r[controller]}       \033[0m'
@@ -287,12 +347,14 @@ def show_movies(chessboard, piece_map):
                 lin.append(f'{r[controller]}\033[94m   *   \033[0m')
                 
             elif piece_map[i][j] == 2:
-                e = f'{r[controller]}\033[38m   {chessboard[i][j].piece}   \033[0m'
+                element = f'   {chessboard[i][j].piece}   ' if chessboard[i][j].piece != 'duck' else ' duck  '
+                e = f'{r[controller]}\033[38m{element}\033[0m'
                 lin.append(e)
                 
             elif piece_map[i][j] in [3,4]:
                 if type(chessboard[i][j]) != str:
-                    e = f'{r[controller]}\033[95m   {chessboard[i][j].piece}   \033[0m'
+                    element = f'   {chessboard[i][j].piece}   ' if chessboard[i][j].piece != 'duck' else ' duck  '
+                    e = f'{r[controller]}\033[95m{element}\033[0m'
                 else:
                     e = f'{r[controller]}\033[95m   x   \033[0m'
                 lin.append(e)

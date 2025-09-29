@@ -2,7 +2,8 @@ import os
 from gamemods.chess import Chess
 from gamemods.atomic_chess import AtomicChess
 from gamemods.crazy_chess import CrazyChess
-from streams import stream_normal_game, stream_crazy_game
+from gamemods.duck_chess import DuckChess
+from streams import stream_normal_game, stream_crazy_game, stream_duck_game
 
 def main():
     os.system('clear')
@@ -59,6 +60,7 @@ def main():
     while True:
         os.system('clear')
         gamemod = input('Qual modo de jogo?\n1. Normal Game\n2. Atomic Chess\n3. Crazy Chess\n4. Duck Chess\n\nR: ')
+
         if gamemod == '1':
             print('\nModo de jogo padrão com as regras tradicionais do xadrez.\n')
             confirm = input('Confirmar? (Yes/No): ')
@@ -66,6 +68,7 @@ def main():
                 game = Chess()
                 stream_game = stream_normal_game
                 break
+
         elif gamemod == '2':
             print('\nXadrez atômico, quando uma peça for capturada, tudo ao redor vai embora, exceto o rei aliado.\nNote que você pode eliminar o rei inimigo, e isso será cheque mate! Uma dica? \nO cavalo é melhor do que parece...\n')
             confirm = input('Confirmar? (Yes/No): ')
@@ -73,6 +76,7 @@ def main():
                 game = AtomicChess()
                 stream_game = stream_normal_game
                 break
+
         elif gamemod == '3':
             print('\nXadrez maluco, você pode realocar uma peça capturada para o seu exército, ao invés de fazer\num movimento padrão de jogo. Para isso, basta digitar a letra da peça capturada em sua jogada. \nNote que há diferenciação de maiúsculas e minúsculas, exemplo: "p" é um peão preto.\n')
             confirm = input('Confirmar? (Yes/No): ')
@@ -80,13 +84,16 @@ def main():
                 game = CrazyChess('crazymate')
                 stream_game = stream_crazy_game
                 break
+
         elif gamemod == '4':
-            return
-            # game = Game()
-            # stream_game = stream_duck_game
+            game = DuckChess()
+            stream_game = stream_duck_game
+            break
+
         elif gamemod == 'exit':
             print('\nAté mais!')
             return
+        
         else:
             print('Digite uma resposta válida (`exit` para sair).')
 

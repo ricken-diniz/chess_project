@@ -213,4 +213,80 @@ def stream_crazy_game(multiplayer,game,fw=None,fr=None):
             break
         if response == 'ok':
             turn = turn * -1
- 
+
+def stream_duck_game(multiplayer,game,fw=None,fr=None):
+    turns, turn, cleaner = init_chat(multiplayer, fw, fr)
+    duck_position = 3,3
+
+    while True:
+        response = init_play(multiplayer, game, turn, turns, fw, fr, cleaner) 
+        if response == 'break':
+            break
+        elif response == 'continue':
+            continue
+
+        if (arrange := get_arrange(response)) != False:
+            i, j = arrange
+            piece_arrange = arrange
+            
+        else:
+            output = cleaner + 'Selecione uma coordenada válida!'
+            output_message(output,multiplayer,fw)
+            continue                
+
+        response = conclude_movement(multiplayer, game, turn, turns, fw, fr, cleaner, piece_arrange, i, j)
+        if response == 'ok' or response == 'break':
+
+            end_game = False
+            while True:
+                output = game.alert_check()
+                if output:
+                    output_message(output,multiplayer,fw)
+
+                output = '\nPretas: ' + " ".join(game.black_kills) + '\n'
+                output += show_chessboard(game.chessboard)
+                output += '\nBrancas: ' + " ".join(game.white_kills) + '\n'
+                output += f'\nVez das {turns[turn]}, aguarde o oponente.'
+                output_message(output,multiplayer,fw)
+
+                inputmessage = '\nSelecione o destino do pato chato (sim, é obrigatório fazer isso): '
+                arrange = input_message(inputmessage,multiplayer,fw,fr,turn)
+
+                if (arrange := get_arrange(arrange)) != False:
+                    i, j = arrange
+                    movement = arrange
+                else:
+                    output = cleaner + 'Selecione uma coordenada válida!'
+                    output_message(output,multiplayer,fw)
+                    continue
+                    
+                if (i,j) != duck_position and game.chessboard[i][j] == '.':
+                    if not (log := game.move_piece(duck_position, movement, turn)) is False:
+
+                        if log == 'Você não pode mover para essa casa, seu rei ficará em xeque!' or log == 'End Game':
+                            id, jd = duck_position
+                            game.chessboard[i][j],game.chessboard[id][jd] = game.chessboard[id][jd],game.chessboard[i][j]
+                            end_game = True
+                            break
+
+                        output = cleaner + 'Movimentando o pato...'
+                        output_message(output,multiplayer,fw)
+                        game.chessboard[i][j].piece_color = game.chessboard[i][j].piece_color * -1 
+                        duck_position = i, j
+                        break
+                    else:
+                        output = cleaner + 'Ocorreu algo de errado... ' + str(log)
+                        output_message(output,multiplayer,fw)
+                        continue
+                    
+                output = cleaner + 'Tente novamente'
+                output_message(output,multiplayer,fw)
+                continue
+            
+            if end_game:
+                check_mate(multiplayer, game, -turn, turns, fw, cleaner)
+                output = 'O pato é traiçoeiro! Ele sempre tem que ser movido!\nPor isso, você perdeu o jogo!'
+                output_message(output,multiplayer,fw)
+                return 'break'
+
+            turn = turn * -1

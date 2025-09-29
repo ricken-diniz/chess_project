@@ -2,8 +2,9 @@ from pieces_movement import Piece
 from utils import get_initial_game,deepcopy_list,has_check,get_square_matrix, update_all_moves
 
 class Chess():
-    def __init__(self, gamemod = 'normalgame'):
-        self.chessboard = get_initial_game(Piece, gamemod)
+    def __init__(self, gamemod = 'normalgame', pieceGameObject = Piece):
+        self.pieceGameObject = pieceGameObject
+        self.chessboard = get_initial_game(self.pieceGameObject, gamemod)
         self.white_kills = []
         self.black_kills = []
         self.white_left_hook = True
@@ -18,7 +19,7 @@ class Chess():
 
         for i in range(len(self.chessboard)):
             for j in range(len(self.chessboard[i])):
-                if type(self.chessboard[i][j]) == Piece and self.chessboard[i][j].piece.lower() == 'k':
+                if type(self.chessboard[i][j]) == self.pieceGameObject and self.chessboard[i][j].piece.lower() == 'k':
                     if self.chessboard[i][j].piece_color == 1:
                         self.black_king_position = (i,j)
                         if (i,j) == (0,4):
@@ -34,55 +35,54 @@ class Chess():
         i, j = piece_arrange
         l, c = movement
 
-        if type(self.chessboard[i][j]) == Piece:
-            
-            if self.chessboard[i][j].piece_map[l][c] in [1,3,4]:
-                piece = self.chessboard[i][j].piece
+        if type(self.chessboard[i][j]) == self.pieceGameObject and (self.chessboard[i][j].piece_map[l][c] in [1,3,4] or self.chessboard[i][j].piece == 'duck'):
+            piece = self.chessboard[i][j].piece
 
-                if self.chessboard[i][j].piece_map[l][c] == 4 and piece.lower() == 'k':
-                    if not self.hook(l, c, turn):
-                        return False
-                    
-                if not self.validate_move(i, j, l, c, turn):
-                    return 'Você não pode mover para essa casa, seu rei ficará em xeque!'
+            if self.chessboard[i][j].piece_map[l][c] == 4 and piece.lower() == 'k':
+                if not self.hook(l, c, turn):
+                    return False
                 
+            if not self.validate_move(i, j, l, c, turn):
+                return 'Você não pode mover para essa casa, seu rei ficará em xeque!'
+            
+            if piece.lower() in ['k','r']:
                 self.check_hook(piece, i, j, turn) 
 
-                if piece.lower() == 'p' and (l-i)*turn == 2:
-                    if c > 0:
-                        left_position = self.chessboard[l][c-1] 
-                        if type(left_position) == Piece and left_position.piece.lower() == 'p' and left_position.piece_color != turn:
-                            left_position.piece_map[l-1*turn][c] = 4 
+            if piece.lower() == 'p' and (l-i)*turn == 2:
+                if c > 0:
+                    left_position = self.chessboard[l][c-1] 
+                    if type(left_position) == self.pieceGameObject and left_position.piece.lower() == 'p' and left_position.piece_color != turn:
+                        left_position.piece_map[l-1*turn][c] = 4 
 
-                    if c < len(self.chessboard) - 1:
-                        right_position = self.chessboard[l][c+1] 
-                        if type(right_position) == Piece and right_position.piece.lower() == 'p' and right_position.piece_color != turn: 
-                            right_position.piece_map[l-1*turn][c] = 4 
-                
-
-                if turn == 1:
-                    ik, jk = self.white_king_position
-                    if (ik, jk) != (-1,-1) and has_check(ik, jk, self.chessboard, -turn):
-                        self.white_check = True
-
-                if turn == -1:
-                    ik, jk = self.black_king_position
-                    if (ik, jk) != (-1,-1) and has_check(ik, jk, self.chessboard, -turn):
-                        self.black_check = True
-
-                if self.black_check or self.white_check:
-                    if self.has_mate(turn, self.chessboard[l][c]):
-                        return 'End Game'
-                    
-                return True
+                if c < len(self.chessboard) - 1:
+                    right_position = self.chessboard[l][c+1] 
+                    if type(right_position) == self.pieceGameObject and right_position.piece.lower() == 'p' and right_position.piece_color != turn: 
+                        right_position.piece_map[l-1*turn][c] = 4 
             
-            return False
+
+            if turn == 1:
+                ik, jk = self.white_king_position
+                if (ik, jk) != (-1,-1) and has_check(ik, jk, self.chessboard, -turn):
+                    self.white_check = True
+
+            if turn == -1:
+                ik, jk = self.black_king_position
+                if (ik, jk) != (-1,-1) and has_check(ik, jk, self.chessboard, -turn):
+                    self.black_check = True
+
+            if self.black_check or self.white_check:
+                if self.has_mate(turn, self.chessboard[l][c]):
+                    return 'End Game'
+                
+            return True
+            
+        return False
 
     def hook(self, l, c, color):
 
         for i in range(len(self.chessboard)):
             for j in range(len(self.chessboard[i])):
-                if type(self.chessboard[i][j]) == Piece and self.chessboard[i][j].piece.lower() == 'k' and self.chessboard[i][j].piece_color == color:
+                if type(self.chessboard[i][j]) == self.pieceGameObject and self.chessboard[i][j].piece.lower() == 'k' and self.chessboard[i][j].piece_color == color:
                     ik, jk = self.chessboard[i][j].piece_arrange
 
 
@@ -92,7 +92,7 @@ class Chess():
 
         if c == 6:
             for _ in range(5, c + 1):
-                if type(self.chessboard[l][_]) == Piece or has_check(l, _, self.chessboard, color):
+                if type(self.chessboard[l][_]) == self.pieceGameObject or has_check(l, _, self.chessboard, color):
                     
                     return False
                 
@@ -109,7 +109,7 @@ class Chess():
 
         elif c == 2:
             for _ in range(3, c - 1, - 1):
-                if type(self.chessboard[l][_]) == Piece or has_check(l, _, self.chessboard, color):
+                if type(self.chessboard[l][_]) == self.pieceGameObject or has_check(l, _, self.chessboard, color):
                     
                     return False
                 
@@ -124,8 +124,8 @@ class Chess():
             
             col_rook = 3
 
-        self.chessboard[l][col_rook] = Piece(l, col_rook, self.chessboard, rook)
-        self.chessboard[l][c] = Piece(l, c, self.chessboard, king)
+        self.chessboard[l][col_rook] = self.pieceGameObject(l, col_rook, self.chessboard, rook)
+        self.chessboard[l][c] = self.pieceGameObject(l, c, self.chessboard, king)
         return True
 
     def check_hook(self, piece, i, j, color):
@@ -190,7 +190,7 @@ class Chess():
 
 
         cb[i][j] = '.'
-        p        = Piece(l, c, cb, piece)
+        p        = self.pieceGameObject(l, c, cb, piece)
         cb[l][c] = p
         
         update_all_moves(cb)
@@ -199,7 +199,7 @@ class Chess():
             return True
         return False
 
-    def has_mate(self, turn, enemy_piece: Piece):
+    def has_mate(self, turn, enemy_piece):
         count = 0
 
         if turn == 1:
@@ -223,7 +223,7 @@ class Chess():
         friend_pieces_arranges = []
         for i in range(len(self.chessboard)):
             for j in range(len(self.chessboard[i])):
-                if type(self.chessboard[i][j]) == Piece and self.chessboard[i][j].piece_color == -turn:
+                if type(self.chessboard[i][j]) == self.pieceGameObject and self.chessboard[i][j].piece_color == -turn:
                     friend_pieces_arranges.append((i,j))
 
         if enemy_piece.piece.lower() in ['r', 'q']:
@@ -289,7 +289,7 @@ class Chess():
         for i in range(len(self.chessboard)):
             line = []
             for j in range(len(self.chessboard[i])):
-                if type(self.chessboard[i][j]) == Piece:
+                if type(self.chessboard[i][j]) == self.pieceGameObject:
                     line.append(self.chessboard[i][j].clone())
                 else:
                     line.append(self.chessboard[i][j])
@@ -309,7 +309,7 @@ class Chess():
             ik, jk = l, c
 
         if (ik,jk) == (-1,-1) or not has_check(ik, jk, cb, turn):
-            if type(cb[il][jl]) == Piece:
+            if type(cb[il][jl]) == self.pieceGameObject:
                 cb[il][jl].piece_map = get_square_matrix(8) 
                 cb[il][jl].update_move() 
 
