@@ -43,6 +43,6 @@ class DuckPiece(Piece):
             
 
 class DuckChess(Chess):
-    def __init__(self, gamemod='duckdefensecheck'):
+    def __init__(self, gamemod='duckchess'):
         super().__init__(gamemod, DuckPiece)
     

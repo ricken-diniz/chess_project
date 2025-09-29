@@ -40,25 +40,6 @@ def get_chessboard(chessboard_type = 'normalgame'):
 
             ['R','N','B','Q','K','B','N','R'],
         ]
-    elif chessboard_type == 'duckchess':
-        chessboard = [
-            ['r','n','b','q','k','b','n','r'],
-
-            ['p','p','p','p','p','p','p','p'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['.','.','.','duck','.','.','.','.'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['.','.','.','.','.','.','.','.'],
-
-            ['P','P','P','P','P','P','P','P'],
-
-            ['R','N','B','Q','K','B','N','R'],
-        ]
-
     elif chessboard_type == 'hook':
         chessboard = [
             ['r','.','.','.','k','.','.','r'],
@@ -77,7 +58,24 @@ def get_chessboard(chessboard_type = 'normalgame'):
 
             ['R','.','.','.','K','.','.','R'],
         ]
+    elif chessboard_type == 'defenseandattack':
+        chessboard = [
+            ['.','.','.','.','.','.','.','k'],
 
+            ['.','.','.','.','.','.','.','.'],
+
+            ['q','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+
+            ['.','.','.','K','.','.','Q','.'],
+
+            ['.','.','.','.','.','.','.','.'],
+        ]
     elif chessboard_type == 'shepherd':
         chessboard = [
             ['r','.','b','q','k','b','n','r'],
@@ -96,7 +94,6 @@ def get_chessboard(chessboard_type = 'normalgame'):
 
             ['R','N','B','.','K','.','N','R'],
         ]
-
     elif chessboard_type == 'tower':
         chessboard = [
             ['r','r','r','r','r','r','r','r'],
@@ -115,7 +112,6 @@ def get_chessboard(chessboard_type = 'normalgame'):
 
             ['R','R','R','R','R','R','R','R'],
         ]
-
     elif chessboard_type == 'matchenpassant':
         chessboard = [
             ['.','.','.','.','.','.','.','.'],
@@ -242,23 +238,23 @@ def get_chessboard(chessboard_type = 'normalgame'):
 
             ['.','.','.','.','.','.','.','.'],
         ]
-    elif chessboard_type == 'defenseandattack':
+    elif chessboard_type == 'duckchess':
         chessboard = [
-            ['.','.','.','.','.','.','.','k'],
+            ['r','n','b','q','k','b','n','r'],
+
+            ['p','p','p','p','p','p','p','p'],
 
             ['.','.','.','.','.','.','.','.'],
 
-            ['q','.','.','.','.','.','.','.'],
+            ['.','.','.','duck','.','.','.','.'],
 
             ['.','.','.','.','.','.','.','.'],
 
             ['.','.','.','.','.','.','.','.'],
 
-            ['.','.','.','.','.','.','.','.'],
+            ['P','P','P','P','P','P','P','P'],
 
-            ['.','.','.','K','.','.','Q','.'],
-
-            ['.','.','.','.','.','.','.','.'],
+            ['R','N','B','Q','K','B','N','R'],
         ]
     elif chessboard_type == 'crazymate':
         chessboard = [
