@@ -86,9 +86,12 @@ def main():
                 break
 
         elif gamemod == '4':
-            game = DuckChess()
-            stream_game = stream_duck_game
-            break
+            print('\nNo Xadrez do Pato você passará muita raiva, o conceito desse modo é que você sempre é obrigado a mover um "pato chato", e o mover pode trazer o seu fim!\nPreste atenção nas jogadas, pois nesse modo você tem a capacidade de atirar no próprio pé.\n')
+            confirm = input('Confirmar? (Yes/No): ')
+            if confirm.lower() in 'yes':
+                game = DuckChess()
+                stream_game = stream_duck_game
+                break
 
         elif gamemod == 'exit':
             print('\nAté mais!')
